@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía: Angular + Tailwind + PrimeNG</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Simple animation for feedback */
+        .copied-feedback {
+            position: absolute;
+            top: -25px;
+            right: 5px;
+            background-color: #10B981;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-300 flex justify-center min-h-screen p-4 sm:p-6 md:p-8">
+
+    <div class="w-full max-w-4xl bg-slate-800 rounded-xl shadow-2xl p-6 sm:p-8 md:p-10 border border-slate-700">
+        <header class="text-center mb-10">
+            <h1 class="text-3xl sm:text-4xl font-bold text-white">Guía de Configuración</h1>
+            <p class="text-lg text-sky-400 mt-2">Angular con TailwindCSS y PrimeNG</p>
+        </header>
+
+        <main class="space-y-12">
+            <!-- Paso 1: Crear Proyecto -->
+            <section class="step">
+                <h2 class="text-2xl font-semibold text-white border-b-2 border-slate-600 pb-3 mb-4 flex items-center">
+                    <span class="bg-sky-500 text-white rounded-full h-8 w-8 flex items-center justify-center mr-3 font-bold">1</span>
+                    Crear el Proyecto de Angular
+                </h2>
+                <p class="mb-4">Inicia un nuevo proyecto de Angular llamado <code class="bg-slate-700 text-sky-300 px-2 py-1 rounded-md text-sm">frontend</code>.</p>
+                <div class="code-container bg-slate-900 rounded-lg overflow-hidden relative border border-slate-700">
+                    <div class="bg-slate-700 px-4 py-2 text-xs font-semibold text-slate-300 flex justify-between items-center">
+                        <span>Terminal</span>
+                        <button class="copy-btn bg-slate-600 hover:bg-slate-500 text-white font-bold py-1 px-3 rounded-md text-xs transition-colors duration-200">Copiar</button>
+                    </div>
+                    <pre class="p-4 text-sm"><code class="language-bash">ng new frontend</code></pre>
+                </div>
+            </section>
+
+            <!-- Paso 2: Instalar Tailwind CSS -->
+            <section class="step">
+                <h2 class="text-2xl font-semibold text-white border-b-2 border-slate-600 pb-3 mb-4 flex items-center">
+                    <span class="bg-sky-500 text-white rounded-full h-8 w-8 flex items-center justify-center mr-3 font-bold">2</span>
+                    Instalar Dependencias de Tailwind
+                </h2>
+                <p class="mb-4">Instala Tailwind CSS y sus dependencias necesarias. Usamos <code class="bg-slate-700 text-sky-300 px-2 py-1 rounded-md text-sm">--force</code> para evitar posibles conflictos de dependencias.</p>
+                <div class="code-container bg-slate-900 rounded-lg overflow-hidden relative border border-slate-700">
+                    <div class="bg-slate-700 px-4 py-2 text-xs font-semibold text-slate-300 flex justify-between items-center">
+                        <span>Terminal</span>
+                        <button class="copy-btn bg-slate-600 hover:bg-slate-500 text-white font-bold py-1 px-3 rounded-md text-xs transition-colors duration-200">Copiar</button>
+                    </div>
+                    <pre class="p-4 text-sm"><code class="language-bash">npm install tailwindcss @tailwindcss/postcss postcss --force</code></pre>
+                </div>
+            </section>
+            
+            <!-- Paso 3: Configurar PostCSS -->
+            <section class="step">
+                <h2 class="text-2xl font-semibold text-white border-b-2 border-slate-600 pb-3 mb-4 flex items-center">
+                    <span class="bg-sky-500 text-white rounded-full h-8 w-8 flex items-center justify-center mr-3 font-bold">3</span>
+                    Configurar PostCSS
+                </h2>
+                <p class="mb-4">Crea el archivo <code class="bg-slate-700 text-sky-300 px-2 py-1 rounded-md text-sm">.postcssrc.json</code> en la raíz del proyecto (<code class="bg-slate-700 text-sky-300 px-2 py-1 rounded-md text-sm">frontend/.postcssrc.json</code>).</p>
+                <div class="code-container bg-slate-900 rounded-lg overflow-hidden relative border border-slate-700">
+                     <div class="bg-slate-700 px-4 py-2 text-xs font-semibold text-slate-300 flex justify-between items-center">
+                        <span>.postcssrc.json</span>
+                        <button class="copy-btn bg-slate-600 hover:bg-slate-500 text-white font-bold py-1 px-3 rounded-md text-xs transition-colors duration-200">Copiar</button>
+                    </div>
+                    <pre class="p-4 text-sm"><code class="language-json">{
+  "plugins": {
+    "@tailwindcss/postcss": {}
+  }
+}</code></pre>
+                </div>
+            </section>
+            
+            <!-- Paso 4: Importar Tailwind en CSS -->
+            <section class="step">
+                <h2 class="text-2xl font-semibold text-white border-b-2 border-slate-600 pb-3 mb-4 flex items-center">
+                    <span class="bg-sky-500 text-white rounded-full h-8 w-8 flex items-center justify-center mr-3 font-bold">4</span>
+                    Importar Estilos y Probar
+                </h2>
+                <p class="mb-4">Añade la directiva <code class="bg-slate-700 text-sky-300 px-2 py-1 rounded-md text-sm">@import</code> en el archivo global de estilos.</p>
+                <div class="code-container bg-slate-900 rounded-lg overflow-hidden relative mb-6 border border-slate-700">
+                    <div class="bg-slate-700 px-4 py-2 text-xs font-semibold text-slate-300 flex justify-between items-center">
+                        <span>src/styles.css</span>
+                        <button class="copy-btn bg-slate-600 hover:bg-slate-500 text-white font-bold py-1 px-3 rounded-md text-xs transition-colors duration-200">Copiar</button>
+                    </div>
+                    <pre class="p-4 text-sm"><code class="language-css">@import "tailwindcss";</code></pre>
+                </div>
+
+                <p class="mb-4">Para probar que Tailwind funciona, reemplaza el contenido de <code class="bg-slate-700 text-sky-300 px-2 py-1 rounded-md text-sm">app.html</code> y añade clases de Tailwind. Por ejemplo:</p>
+                 <div class="code-container bg-slate-900 rounded-lg overflow-hidden relative border border-slate-700">
+                    <div class="bg-slate-700 px-4 py-2 text-xs font-semibold text-slate-300 flex justify-between items-center">
+                        <span>src/app/app.html</span>
+                        <button class="copy-btn bg-slate-600 hover:bg-slate-500 text-white font-bold py-1 px-3 rounded-md text-xs transition-colors duration-200">Copiar</button>
+                    </div>
+                    <pre class="p-4 text-sm"><code class="language-html">&lt;h1 class="text-3xl font-bold text-sky-500 text-center my-8"&gt;Desarrollo Web&lt;/h1&gt;
+&lt;router-outlet /&gt;</code></pre>
+                </div>
+            </section>
+
+             <!-- Paso 5: Instalar PrimeNG -->
+            <section class="step">
+                <h2 class="text-2xl font-semibold text-white border-b-2 border-slate-600 pb-3 mb-4 flex items-center">
+                    <span class="bg-sky-500 text-white rounded-full h-8 w-8 flex items-center justify-center mr-3 font-bold">5</span>
+                    Instalar y Configurar PrimeNG
+                </h2>
+                <p class="mb-4">Instala PrimeNG y el tema <code class="bg-slate-700 text-sky-300 px-2 py-1 rounded-md text-sm">Aura</code>.</p>
+                <div class="code-container bg-slate-900 rounded-lg overflow-hidden relative border border-slate-700 mb-6">
+                    <div class="bg-slate-700 px-4 py-2 text-xs font-semibold text-slate-300 flex justify-between items-center">
+                        <span>Terminal</span>
+                        <button class="copy-btn bg-slate-600 hover:bg-slate-500 text-white font-bold py-1 px-3 rounded-md text-xs transition-colors duration-200">Copiar</button>
+                    </div>
+                    <pre class="p-4 text-sm"><code class="language-bash">npm install primeng @primeuix/themes</code></pre>
+                </div>
+
+                <p class="mb-4">Ahora, configura los proveedores en <code class="bg-slate-700 text-sky-300 px-2 py-1 rounded-md text-sm">src/app/app.config.ts</code> para habilitar las animaciones y el tema de PrimeNG.</p>
+                <div class="code-container bg-slate-900 rounded-lg overflow-hidden relative border border-slate-700">
+                    <div class="bg-slate-700 px-4 py-2 text-xs font-semibold text-slate-300 flex justify-between items-center">
+                        <span>src/app/app.config.ts</span>
+                        <button class="copy-btn bg-slate-600 hover:bg-slate-500 text-white font-bold py-1 px-3 rounded-md text-xs transition-colors duration-200">Copiar</button>
+                    </div>
+                    <pre class="p-4 text-sm"><code class="language-typescript">import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
+import { provideRouter } from '@angular/router';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { providePrimeNG } from 'primeng/config';
+import Aura from '@primeuix/themes/aura';
+
+import { routes } from './app.routes';
+
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideZoneChangeDetection({ eventCoalescing: true }),
+    provideRouter(routes),
+    provideAnimationsAsync(),
+    providePrimeNG({
+      theme: {
+        preset: Aura
+      }
+    })
+  ]
+};</code></pre>
+                </div>
+            </section>
+            
+            <!-- Paso 6: Crear Layout Components -->
+            <section class="step">
+                <h2 class="text-2xl font-semibold text-white border-b-2 border-slate-600 pb-3 mb-4 flex items-center">
+                    <span class="bg-sky-500 text-white rounded-full h-8 w-8 flex items-center justify-center mr-3 font-bold">6</span>
+                    Crear Componentes del Layout
+                </h2>
+                <p class="mb-4">Genera los componentes base para la estructura de la página (header, aside, footer).</p>
+                <div class="code-container bg-slate-900 rounded-lg overflow-hidden relative border border-slate-700">
+                     <div class="bg-slate-700 px-4 py-2 text-xs font-semibold text-slate-300 flex justify-between items-center">
+                        <span>Terminal</span>
+                        <button class="copy-btn bg-slate-600 hover:bg-slate-500 text-white font-bold py-1 px-3 rounded-md text-xs transition-colors duration-200">Copiar</button>
+                    </div>
+                    <pre class="p-4 text-sm"><code class="language-bash">ng g c components/layout/header
+ng g c components/layout/aside
+ng g c components/layout/footer</code></pre>
+                </div>
+                <p class="mt-4">Asegúrate de que todos los componentes, incluido <code class="bg-slate-700 text-sky-300 px-2 py-1 rounded-md text-sm">AppComponent</code>, tengan la propiedad <code class="bg-slate-700 text-sky-300 px-2 py-1 rounded-md text-sm">standalone: true</code>.</p>
+            </section>
+            
+            <!-- Paso 7: Importar Layout en App -->
+            <section class="step">
+                 <h2 class="text-2xl font-semibold text-white border-b-2 border-slate-600 pb-3 mb-4 flex items-center">
+                    <span class="bg-sky-500 text-white rounded-full h-8 w-8 flex items-center justify-center mr-3 font-bold">7</span>
+                    Integrar Componentes del Layout
+                </h2>
+                <p class="mb-4">Importa los componentes del layout recién creados en el componente principal <code class="bg-slate-700 text-sky-300 px-2 py-1 rounded-md text-sm">app.ts</code>.</p>
+                 <div class="code-container bg-slate-900 rounded-lg overflow-hidden relative border border-slate-700 mb-6">
+                    <div class="bg-slate-700 px-4 py-2 text-xs font-semibold text-slate-300 flex justify-between items-center">
+                        <span>src/app/app.ts</span>
+                        <button class="copy-btn bg-slate-600 hover:bg-slate-500 text-white font-bold py-1 px-3 rounded-md text-xs transition-colors duration-200">Copiar</button>
+                    </div>
+                    <pre class="p-4 text-sm"><code class="language-typescript">import { Component, signal } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
+import { Header } from './components/layout/header/header';
+import { Footer } from './components/layout/footer/footer';
+import { Aside } from './components/layout/aside/aside';
+
+@Component({
+  selector: 'app-root',
+  standalone: true,
+  imports: [RouterOutlet, Header, Footer, Aside],
+  templateUrl: './app.html',
+  styleUrl: './app.css'
+})
+export class App {
+  protected readonly title = signal('frontend');
+}</code></pre>
+                </div>
+                <p class="mb-4">Y luego, estructura el <code class="bg-slate-700 text-sky-300 px-2 py-1 rounded-md text-sm">app.html</code> para que utilice estos componentes.</p>
+                <div class="code-container bg-slate-900 rounded-lg overflow-hidden relative border border-slate-700">
+                    <div class="bg-slate-700 px-4 py-2 text-xs font-semibold text-slate-300 flex justify-between items-center">
+                        <span>src/app/app.html (Ejemplo de estructura)</span>
+                        <button class="copy-btn bg-slate-600 hover:bg-slate-500 text-white font-bold py-1 px-3 rounded-md text-xs transition-colors duration-200">Copiar</button>
+                    </div>
+                    <pre class="p-4 text-sm"><code class="language-html">&lt;div class="flex flex-col min-h-screen"&gt;
+  &lt;app-header&gt;&lt;/app-header&gt;
+  &lt;div class="flex flex-1"&gt;
+    &lt;app-aside&gt;&lt;/app-aside&gt;
+    &lt;main class="flex-1 p-6"&gt;
+      &lt;router-outlet&gt;&lt;/router-outlet&gt;
+    &lt;/main&gt;
+  &lt;/div&gt;
+  &lt;app-footer&gt;&lt;/app-footer&gt;
+&lt;/div&gt;</code></pre>
+                </div>
+            </section>
+
+             <!-- Paso 8: PanelMenu de PrimeNG -->
+            <section class="step">
+                <h2 class="text-2xl font-semibold text-white border-b-2 border-slate-600 pb-3 mb-4 flex items-center">
+                    <span class="bg-sky-500 text-white rounded-full h-8 w-8 flex items-center justify-center mr-3 font-bold">8</span>
+                    Implementar Menú con PrimeNG
+                </h2>
+                <p class="mb-4">Para implementar el componente <code class="bg-slate-700 text-sky-300 px-2 py-1 rounded-md text-sm">PanelMenu</code>, modifica el componente <code class="bg-slate-700 text-sky-300 px-2 py-1 rounded-md text-sm">Aside</code>.</p>
+                <div class="code-container bg-slate-900 rounded-lg overflow-hidden relative border border-slate-700 mb-6">
+                    <div class="bg-slate-700 px-4 py-2 text-xs font-semibold text-slate-300 flex justify-between items-center">
+                        <span>src/app/components/layout/aside/aside.html</span>
+                        <button class="copy-btn bg-slate-600 hover:bg-slate-500 text-white font-bold py-1 px-3 rounded-md text-xs transition-colors duration-200">Copiar</button>
+                    </div>
+                    <pre class="p-4 text-sm"><code class="language-html">&lt;div class="card flex justify-center"&gt;
+    &lt;p-panelMenu [model]="items" class="w-full md:w-80" /&gt;
+&lt;/div&gt;</code></pre>
+                </div>
+
+                <p class="mb-4">Y actualiza la lógica en el archivo TypeScript correspondiente.</p>
+                <div class="code-container bg-slate-900 rounded-lg overflow-hidden relative border border-slate-700">
+                    <div class="bg-slate-700 px-4 py-2 text-xs font-semibold text-slate-300 flex justify-between items-center">
+                        <span>src/app/components/layout/aside/aside.ts</span>
+                        <button class="copy-btn bg-slate-600 hover:bg-slate-500 text-white font-bold py-1 px-3 rounded-md text-xs transition-colors duration-200">Copiar</button>
+                    </div>
+                    <pre class="p-4 text-sm"><code class="language-typescript">import { Component, OnInit } from '@angular/core';
+import { MenuItem } from 'primeng/api';
+import { PanelMenuModule } from 'primeng/panelmenu'; // Importa PanelMenuModule
+
+@Component({
+  selector: 'app-aside',
+  standalone: true,
+  imports: [PanelMenuModule], // Añade PanelMenuModule a los imports
+  templateUrl: './aside.html',
+  styleUrl: './aside.css'
+})
+export class Aside implements OnInit {
+  items: MenuItem[] | undefined;
+
+  ngOnInit() {
+    this.items = [
+      {
+        label: 'Clientes',
+        icon: 'pi pi-fw pi-users',
+        routerLink: '/clientes',
+        items: [
+          {
+            label: 'Crud Cliente'
+          },
+          {
+            label: 'HTML 2'
+          }
+        ]
+      },
+      {
+        label: 'Tipo Productos',
+        icon: 'pi pi-fw pi-qrcode',
+      },
+      {
+        label: 'Productos',
+        icon: 'pi pi-fw pi-shopping-bag',
+      },
+      {
+        label: 'Ventas',
+        icon: 'pi pi-fw pi-shopping-cart',
+      }
+    ];
+  }
+}</code></pre>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        document.querySelectorAll('.copy-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                const codeContainer = button.closest('.code-container');
+                const codeElement = codeContainer.querySelector('code');
+                const codeToCopy = codeElement.innerText;
+                
+                navigator.clipboard.writeText(codeToCopy).then(() => {
+                    // Visual feedback
+                    let feedback = codeContainer.querySelector('.copied-feedback');
+                    if (!feedback) {
+                        feedback = document.createElement('div');
+                        feedback.className = 'copied-feedback';
+                        feedback.textContent = '¡Copiado!';
+                        codeContainer.appendChild(feedback);
+                    }
+                    
+                    feedback.style.opacity = '1';
+                    setTimeout(() => {
+                        feedback.style.opacity = '0';
+                    }, 2000);
+                }).catch(err => {
+                    console.error('Error al copiar el texto: ', err);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
