@@ -1,4 +1,9 @@
-
+Pagina del profe
+http://www.tecnogua.com/academic/site/
+-----------
+Instalacion de proyecto fronend
+http://www.tecnogua.com/academic/site/frontend/angular20/instalacion/
+-----------
 instalacion de mysql con docker
 http://www.tecnogua.com/academic/site/oci/desarrolloWeb/mysql_Ubuntu/
 -----------
