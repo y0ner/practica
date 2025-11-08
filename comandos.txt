@@ -1,0 +1,33 @@
+
+instalacion de mysql con docker
+http://www.tecnogua.com/academic/site/oci/desarrolloWeb/mysql_Ubuntu/
+-----------
+docker exec -it mysql-server mysql -uroot -p
+Password del contenedor: Admin25**
+user: yoner
+pswd: yoner
+.....................................
+Instalacion de posgret con docker
+http://www.tecnogua.com/academic/site/oci/desarrolloWeb/postgresql/
+-----------
+docker exec -it postgres-server psql -U postgres
+password del contenedor: Admin25**
+user: yoner
+pswd: yoner
+-------------------------------------
+Instalacion de Sql Server con docker
+http://www.tecnogua.com/academic/site/oci/desarrolloWeb/MSsqlServer/
+-----------
+docker exec -it --user root sqlserver-container bash
+password del contenedor: Admin25**
+user: sa
+pswd: Admin25**
+-------------------------------------
+Instalacion de Oracle con docker
+http://www.tecnogua.com/academic/site/oci/desarrolloWeb/oracle/
+-----------
+sudo docker exec -it oracle-xe bash
+password del contenedor: Admin25**
+user: YONER_LOCAL
+pswd: Admin25**
+-------------------------------------
