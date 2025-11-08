@@ -1,0 +1,74 @@
+### breeds.http
+
+@baseUrl = http://localhost:4000
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzYxMTUzMjc1LCJleHAiOjE3NjExNTM4NzV9.YDQhQBnJcfl4C4PoJme1K1zJbQHDL2WSEeA2dUG_xiM
+
+### ================== RUTAS SIN AUTENTICACIÓN ==================
+
+### Obtener todos los breedes (SIN token)
+GET {{baseUrl}}/api/breeds/public
+
+### Obtener breed por ID (SIN token)
+GET {{baseUrl}}/api/breeds/public/1
+
+### Crear un nuevo breed (SIN token)
+POST {{baseUrl}}/api/breeds/public
+Content-Type: application/json
+
+{
+  "name": "cafe",
+  "status": "ACTIVE"
+}
+
+### Actualizar un breed (SIN token)
+PATCH {{baseUrl}}/api/breeds/public/1
+Content-Type: application/json
+
+{
+  "name": "Gabriel 'Gabo' García Márquez",
+  "status": "ACTIVE"
+}
+
+### Eliminar un breed físicamente (SIN token)
+DELETE {{baseUrl}}/api/breeds/public/1
+
+### Eliminar un breed lógicamente (SIN token)
+DELETE {{baseUrl}}/api/breeds/public/2/logic
+
+
+### ================== RUTAS CON AUTENTICACIÓN ==================
+
+### Obtener todos los breedes (CON token)
+GET {{baseUrl}}/api/breeds
+Authorization: Bearer {{token}}
+
+### Obtener breed por ID (CON token)
+GET {{baseUrl}}/api/breeds/1
+Authorization: Bearer {{token}}
+
+### Crear un nuevo breed (CON token)
+POST {{baseUrl}}/api/breeds
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Julio Cortázar",
+  "status": "ACTIVE"
+}
+
+### Actualizar un breed (CON token)
+PATCH {{baseUrl}}/api/breeds/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Julio Florencio Cortázar"
+}
+
+### Eliminar un breed físicamente (CON token)
+DELETE {{baseUrl}}/api/breeds/1
+Authorization: Bearer {{token}}
+
+### Eliminar un breed lógicamente (CON token)
+DELETE {{baseUrl}}/api/breeds/1/logic
+Authorization: Bearer {{token}}

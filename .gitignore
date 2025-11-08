@@ -1,0 +1,9 @@
+# Ignorar node_modules de ambos proyectos
+/frontend/node_modules/
+/yi_dogs/node_modules/
+
+# Archivos comunes a ignorar
+.env
+*.log
+.vscode/
+dist/

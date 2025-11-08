@@ -1,0 +1,77 @@
+### dogs.http
+
+@baseUrl = http://localhost:4000
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzYwNDU3MzcyfQ.your_token_here
+
+### ================== RUTAS SIN AUTENTICACIÓN ==================
+
+### Obtener todas las perros (SIN token)
+GET {{baseUrl}}/api/dogs/public
+
+### Obtener perro por ID (SIN token)
+GET {{baseUrl}}/api/dogs/public/1
+
+### Crear una nueva perro (SIN token)
+POST {{baseUrl}}/api/dogs/public
+Content-Type: application/json
+
+{
+  "birthday": "22 de octubre del 2025.",
+  "value_dog": 200000,
+  "breeds_id": 1,
+  "status": "ACTIVE"
+}
+
+### Actualizar una perro (SIN token)
+PATCH {{baseUrl}}/api/dogs/public/1
+Content-Type: application/json
+
+{
+  "birthday": "Un resumen actualizado de la perro."
+}
+
+### Eliminar una perro físicamente (SIN token)
+DELETE {{baseUrl}}/api/dogs/public/1
+
+### Eliminar una perro lógicamente (SIN token)
+DELETE {{baseUrl}}/api/dogs/public/2/logic
+
+
+### ================== RUTAS CON AUTENTICACIÓN ==================
+
+### Obtener todas las perros (CON token)
+GET {{baseUrl}}/api/dogs
+Authorization: Bearer {{token}}
+
+### Obtener perro por ID (CON token)
+GET {{baseUrl}}/api/dogs/1
+Authorization: Bearer {{token}}
+
+### Crear una nueva perro (CON token)
+POST {{baseUrl}}/api/dogs
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "birthday": "Otra perro relevante para usuarios autenticados.",
+  "value_dog": "Contenido exclusivo para usuarios que han iniciado sesión en la plataforma.",
+  "dogs_id": 2,
+  "status": "ACTIVE"
+}
+
+### Actualizar una perro (CON token)
+PATCH {{baseUrl}}/api/dogs/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "status": "INACTIVE"
+}
+
+### Eliminar una perro físicamente (CON token)
+DELETE {{baseUrl}}/api/dogs/1
+Authorization: Bearer {{token}}
+
+### Eliminar una perro lógicamente (CON token)
+DELETE {{baseUrl}}/api/dogs/1/logic
+Authorization: Bearer {{token}}
