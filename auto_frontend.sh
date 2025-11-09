@@ -362,19 +362,43 @@ implement_panel_menu() {
     print_msg "Trabajando en el proyecto: $PROJECT_NAME"
     cd "$PROJECT_NAME" || { print_error "No se encontró el directorio del proyecto '$PROJECT_NAME'."; return 1; }
 
-    # Preguntar por los nombres de las tablas
-    read -p "Introduce el nombre de la primera tabla (ej: breeds): " table1
-    read -p "Introduce el nombre de la segunda tabla (ej: dogs): " table2
-
-    if [ -z "$table1" ] || [ -z "$table2" ]; then
-        print_error "Ambos nombres de tabla son requeridos."
+    # --- INICIO DE LA MODIFICACIÓN: MENÚ DINÁMICO ---
+    read -p "Introduce el número de elementos de menú (tablas) que deseas crear: " num_tables
+    if ! [[ "$num_tables" =~ ^[1-9][0-9]*$ ]]; then
+        print_error "Por favor, introduce un número entero positivo."
         cd ..
         return 1
     fi
 
-    # Capitalizar la primera letra para el 'label'
-    label1="$(echo ${table1:0:1} | tr '[:lower:]' '[:upper:]')${table1:1}"
-    label2="$(echo ${table2:0:1} | tr '[:lower:]' '[:upper:]')${table2:1}"
+    menu_items_str=""
+    for (( i=1; i<=num_tables; i++ )); do
+        read -p "Introduce el nombre para el elemento de menú #${i}: " table_name
+        if [ -z "$table_name" ]; then
+            print_error "El nombre no puede estar vacío."
+            # Decrementamos i para que vuelva a pedir el mismo número de elemento
+            ((i--))
+            continue
+        fi
+
+        # Capitalizar la primera letra para el 'label'
+        label="$(echo ${table_name:0:1} | tr '[:lower:]' '[:upper:]')${table_name:1}"
+        
+        # Construir la cadena para cada item del menú
+        item_str=$(cat <<ITEM
+            {
+                label: '${label}',
+                icon: 'pi pi-fw pi-box',
+            }
+ITEM
+)
+        # Añadir coma si no es el último elemento
+        if [ "$i" -lt "$num_tables" ]; then
+            menu_items_str+="${item_str},"
+        else
+            menu_items_str+="${item_str}"
+        fi
+    done
+    # --- FIN DE LA MODIFICACIÓN ---
 
     print_msg "Actualizando src/app/components/layout/aside/aside.html"
     cat << 'EOF' > src/app/components/layout/aside/aside.html
@@ -383,8 +407,8 @@ implement_panel_menu() {
 </div>
 EOF
 
-    print_msg "Actualizando src/app/components/layout/aside/aside.ts"
-    # Usamos un delimitador diferente para cat (END_OF_TS) para poder usar variables
+    print_msg "Actualizando src/app/components/layout/aside/aside.ts con ${num_tables} elementos"
+    # Usamos un delimitador para expandir la variable con los items del menú
     cat << END_OF_TS > src/app/components/layout/aside/aside.ts
 import { Component, OnInit } from '@angular/core';
 import { MenuItem } from 'primeng/api';
@@ -402,14 +426,7 @@ export class Aside implements OnInit {
 items: MenuItem[] | undefined;
 ngOnInit() {
         this.items = [
-            {
-                label: '${label1}',
-                icon: 'pi pi-fw pi-box',
-            },
-            {
-                label: '${label2}',
-                icon: 'pi pi-fw pi-box',
-            }
+            ${menu_items_str}
         ];
     }
 }
