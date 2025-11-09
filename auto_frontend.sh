@@ -459,79 +459,68 @@ create_crud_apis() {
     # Verificar si el archivo con los nombres de las tablas existe
     if [ ! -f ".table_names" ]; then
         print_error "No se encontró el archivo '.table_names'. Por favor, ejecuta primero el paso 'Implementar PanelMenu en Aside' (Opción 6 del menú anterior)."
-        cd ..
-        return 1
+        cd ..; return 1
     fi
 
-    # Leer los nombres de las tablas desde el archivo
+    # Leer los nombres de las tablas
     mapfile -t table_names < .table_names
-
     print_msg "Se generarán APIs para las siguientes tablas: ${table_names[*]}"
 
     local all_imports=""
     local all_routes=""
     local menu_items_str=""
 
-    # Generar componentes, rutas e imports para cada tabla
     for table_name in "${table_names[@]}"; do
         local lower_name="$table_name"
-        local capitalized_name="$(echo ${lower_name:0:1} | tr '[:lower:]' '[:upper:]')${lower_name:1}"
-        
+        local capitalized_name="$(tr '[:lower:]' '[:upper:]' <<< ${lower_name:0:1})${lower_name:1}"
+
         print_msg "Generando componentes CRUD para '$capitalized_name'..."
         ng g c "components/${lower_name}/getall"
         ng g c "components/${lower_name}/create"
         ng g c "components/${lower_name}/update"
         ng g c "components/${lower_name}/delete"
 
-        # Acumular imports para app.routes.ts
+        # ✅ Corrección 1: importar sin ".component"
         all_imports+=$(cat <<EOF
-import { Getall as ${capitalized_name}Getall } from './components/${lower_name}/getall/getall.component';
-import { Create as ${capitalized_name}Create } from './components/${lower_name}/create/create.component';
-import { Update as ${capitalized_name}Update } from './components/${lower_name}/update/update.component';
-import { Delete as ${capitalized_name}Delete } from './components/${lower_name}/delete/delete.component';
+import { Getall as ${capitalized_name}Getall } from './components/${lower_name}/getall/getall';
+import { Create as ${capitalized_name}Create } from './components/${lower_name}/create/create';
+import { Update as ${capitalized_name}Update } from './components/${lower_name}/update/update';
+import { Delete as ${capitalized_name}Delete } from './components/${lower_name}/delete/delete';
 EOF
 )
 
-        # Acumular rutas para app.routes.ts (usando el nombre en plural para la ruta)
+        # ✅ Corrección 2: rutas sin plural
         all_routes+=$(cat <<EOF
-    { path: "${lower_name}s", component: ${capitalized_name}Getall },
-    { path: "${lower_name}s/new", component: ${capitalized_name}Create },
-    { path: "${lower_name}s/edit/:id", component: ${capitalized_name}Update },
-    { path: "${lower_name}s/delete/:id", component: ${capitalized_name}Delete },
+    { path: "${lower_name}", component: ${capitalized_name}Getall },
+    { path: "${lower_name}/new", component: ${capitalized_name}Create },
+    { path: "${lower_name}/edit/:id", component: ${capitalized_name}Update },
+    { path: "${lower_name}/delete/:id", component: ${capitalized_name}Delete },
 EOF
 )
 
-        # Acumular items para el menú en aside.ts
+        # ✅ Corrección 3: aside con comas y sin plural
         menu_items_str+=$(cat <<EOF
-            {
-                label: '${capitalized_name}s',
-                icon: 'pi pi-fw pi-box',
-                routerLink: '/${lower_name}s'
-            },
+            { label: '${capitalized_name}', icon: 'pi pi-fw pi-box', routerLink: '/${lower_name}' },
 EOF
 )
     done
+
+    # Quitar la última coma para evitar errores
+    menu_items_str=$(echo "${menu_items_str}" | sed 's/,$//')
 
     print_msg "Actualizando src/app/app.routes.ts..."
     cat << EOF > src/app/app.routes.ts
 import { Routes } from '@angular/router';
 
-// Imports para todos los componentes CRUD
 ${all_imports}
 
 export const routes: Routes = [
-    { 
-        path: '', 
-        redirectTo: '/', 
-        pathMatch: 'full' 
-    },
+    { path: '', redirectTo: '/', pathMatch: 'full' },
 ${all_routes}
 ];
 EOF
 
     print_msg "Actualizando el menú en src/app/components/layout/aside/aside.ts..."
-    # Quitamos la última coma de la cadena de items del menú
-    menu_items_str=$(echo "${menu_items_str}" | sed 's/,$//')
     cat << EOF > src/app/components/layout/aside/aside.ts
 import { Component, OnInit } from '@angular/core';
 import { MenuItem } from 'primeng/api';
@@ -556,9 +545,10 @@ ${menu_items_str}
 }
 EOF
 
-    print_success "Componentes CRUD, rutas y menú actualizados correctamente."
+    print_success "Componentes CRUD, rutas e importaciones corregidas correctamente."
     cd ..
 }
+
 
 run_all_steps() {
     print_step "EJECUTANDO TODOS LOS PASOS"
