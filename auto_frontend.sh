@@ -108,7 +108,7 @@ create_angular_project() {
 }
 
 install_primeng() {
-    print_step "Instalando PrimeNG y Tema Aura (Método de la Guía)"
+    print_step "Instalando PrimeNG y seleccionando un Tema (Método de la Guía)"
     if [ -z "$PROJECT_NAME" ]; then
         print_error "No has seleccionado un proyecto. Por favor, crea o selecciona uno primero."
         return 1
@@ -123,13 +123,71 @@ install_primeng() {
         return 1
     fi
 
-    print_msg "Configurando tema Aura en src/app/app.config.ts..."
-    cat << 'EOF' > src/app/app.config.ts
+    # --- INICIO DE LA MODIFICACIÓN: MENÚ DE TEMAS ---
+    print_msg "Por favor, elige un tema de PrimeNG para instalar:"
+    options=("Aura" "Lara" "Nora" "Cancelar")
+    
+    # Variables para el tema elegido
+    THEME_PRESET_NAME=""
+    THEME_IMPORT_PATH=""
+
+    select opt in "${options[@]}"; do
+        case $opt in
+            "Aura")
+                THEME_PRESET_NAME="Aura"
+                THEME_IMPORT_PATH="@primeuix/themes/aura"
+                break
+                ;;
+            "Lara")
+                THEME_PRESET_NAME="Lara"
+                THEME_IMPORT_PATH="@primeuix/themes/lara"
+                break
+                ;;
+            "Nora")
+                THEME_PRESET_NAME="Nora"
+                THEME_IMPORT_PATH="@primeuix/themes/nora"
+                break
+                ;;
+            "Cancelar")
+                print_error "Instalación de tema cancelada por el usuario."
+                cd ..
+                return 1
+                ;;
+            *) echo "Opción inválida $REPLY";;
+        esac
+    done
+    # --- FIN DE LA MODIFICACIÓN: MENÚ DE TEMAS ---
+
+    # --- INICIO DE LA NUEVA FUNCIONALIDAD: FORZAR TEMA CLARO ---
+    print_msg "El tema '$THEME_PRESET_NAME' ha sido seleccionado."
+    read -p "¿Deseas forzar un esquema de color claro para evitar inconsistencias con el modo oscuro del navegador? (s/n): " force_light_scheme
+
+    THEME_CONFIG="theme: { preset: ${THEME_PRESET_NAME} }"
+    if [[ "$force_light_scheme" =~ ^[sSyY]$ ]]; then
+        print_msg "Forzando esquema de color claro en la configuración de PrimeNG..."
+        # Sobrescribimos la configuración para añadir las opciones de darkMode
+        THEME_CONFIG=$(cat <<EOC # Quitamos las comillas de 'EOC' para que las variables se expandan
+theme: {
+            preset: ${THEME_PRESET_NAME},
+            options: {
+                darkModeSelector: false
+            }
+        }
+EOC
+)
+        print_success "Esquema de color claro forzado en app.config.ts."
+    fi
+    # --- FIN DE LA NUEVA FUNCIONALIDAD ---
+
+    print_msg "Configurando PrimeNG en src/app/app.config.ts..."
+    # Usamos un delimitador para poder expandir las variables THEME_PRESET_NAME y THEME_CONFIG
+    cat << EOF_CONFIG > src/app/app.config.ts
 import { ApplicationConfig } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { providePrimeNG } from 'primeng/config';
-import Aura from '@primeuix/themes/aura';
+import { ConfirmationService, MessageService } from 'primeng/api';
+import ${THEME_PRESET_NAME} from '${THEME_IMPORT_PATH}';
 
 import { routes } from './app.routes';
 
@@ -137,16 +195,13 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes),
     provideAnimationsAsync(),
-    providePrimeNG({
-        theme: {
-            preset: Aura
-        }
-    })
+    providePrimeNG({ ${THEME_CONFIG} }),
+    ConfirmationService,
+    MessageService
   ]
 };
-EOF
+EOF_CONFIG
 
-    print_success "PrimeNG y el tema Aura han sido instalados y configurados."
     cd ..
 }
 
