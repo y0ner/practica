@@ -370,42 +370,33 @@ implement_panel_menu() {
         return 1
     fi
 
-    menu_items_str=""
-    declare -a table_names=() # CORRECCIÓN: Declarar el array para guardar los nombres
+    declare -a table_names=()
+    declare -a menu_items_array=()
     for (( i=1; i<=num_tables; i++ )); do
         read -p "Introduce el nombre para el elemento de menú #${i}: " table_name
         if [ -z "$table_name" ]; then
             print_error "El nombre no puede estar vacío."
-            # Decrementamos i para que vuelva a pedir el mismo número de elemento
             ((i--))
             continue
         fi
 
-        # CORRECCIÓN: Guardar el nombre de la tabla en el array
         table_names+=("$table_name")
 
-        # Capitalizar la primera letra para el 'label'
         label="$(echo ${table_name:0:1} | tr '[:lower:]' '[:upper:]')${table_name:1}"
         
-        # Construir la cadena para cada item del menú
-        item_str=$(cat <<ITEM
-            {
-                label: '${label}',
-                icon: 'pi pi-fw pi-box',
-            },
+        # Construir el objeto JSON para el menú y añadirlo a un array
+        menu_items_array+=( $(cat <<ITEM
+{
+    label: '${label}',
+    icon: 'pi pi-fw pi-box'
+}
 ITEM
-)
-        # Añadir coma si no es el último elemento
-        if [ "$i" -lt "$num_tables" ]; then
-            menu_items_str+="${item_str},"
-        else
-            menu_items_str+="${item_str}"
-        fi
+))
     done
     # --- FIN DE LA MODIFICACIÓN ---
 
-    # Quitar la última coma de la cadena de items del menú para evitar errores de sintaxis
-    menu_items_str=$(echo "${menu_items_str}" | sed 's/,$//')
+    # Unir los items del menú con comas
+    menu_items_str=$(IFS=,; echo "${menu_items_array[*]}")
 
     # --- INICIO DE LA CORRECCIÓN: Guardar nombres de tablas ---
     print_msg "Guardando nombres de las tablas en .table_names para uso futuro..."
@@ -423,14 +414,14 @@ EOF
     # Usamos un delimitador para expandir la variable con los items del menú
     cat << END_OF_TS > src/app/components/layout/aside/aside.ts
 import { Component, OnInit } from '@angular/core';
-import { MenuItem } from 'primeng/api';
-import { PanelMenu } from 'primeng/panelmenu';
-import { CommonModule } from '@angular/common'; // Importante para [model]
+import { MenuItem } from 'primeng/api'; // Asegúrate de que PanelMenuModule esté importado si usas p-panelmenu
+import { PanelMenuModule } from 'primeng/panelmenu';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-aside',
   standalone: true,
-  imports: [CommonModule, PanelMenu],
+  imports: [CommonModule, PanelMenuModule],
   templateUrl: './aside.html',
   styleUrl: './aside.css'
 })
@@ -468,9 +459,9 @@ create_crud_apis() {
 
     print_msg "Se generarán APIs para las siguientes tablas: ${table_names[*]}"
 
-    local all_imports=""
-    local all_routes=""
-    local menu_items_str=""
+    declare -a all_imports_array=()
+    declare -a all_routes_array=()
+    declare -a menu_items_array=()
 
     # Generar componentes, rutas e imports para cada tabla
     for table_name in "${table_names[@]}"; do
@@ -484,33 +475,34 @@ create_crud_apis() {
         ng g c "components/${lower_name}/delete"
 
         # Acumular imports para app.routes.ts
-        all_imports+=$(cat <<EOF
-import { Getall as ${capitalized_name}Getall } from './components/${lower_name}/getall/getall.component';
-import { Create as ${capitalized_name}Create } from './components/${lower_name}/create/create.component';
-import { Update as ${capitalized_name}Update } from './components/${lower_name}/update/update.component';
-import { Delete as ${capitalized_name}Delete } from './components/${lower_name}/delete/delete.component';
-EOF
-)
+        all_imports_array+=( "import { Getall as ${capitalized_name}Getall } from './components/${lower_name}/getall/getall.component';" )
+        all_imports_array+=( "import { Create as ${capitalized_name}Create } from './components/${lower_name}/create/create.component';" )
+        all_imports_array+=( "import { Update as ${capitalized_name}Update } from './components/${lower_name}/update/update.component';" )
+        all_imports_array+=( "import { Delete as ${capitalized_name}Delete } from './components/${lower_name}/delete/delete.component';" )
 
         # Acumular rutas para app.routes.ts (usando el nombre en plural para la ruta)
-        all_routes+=$(cat <<EOF
-    { path: "${lower_name}s", component: ${capitalized_name}Getall },
-    { path: "${lower_name}s/new", component: ${capitalized_name}Create },
-    { path: "${lower_name}s/edit/:id", component: ${capitalized_name}Update },
-    { path: "${lower_name}s/delete/:id", component: ${capitalized_name}Delete },
-EOF
-)
+        all_routes_array+=( "{ path: \"${lower_name}s\", component: ${capitalized_name}Getall }" )
+        all_routes_array+=( "{ path: \"${lower_name}s/new\", component: ${capitalized_name}Create }" )
+        all_routes_array+=( "{ path: \"${lower_name}s/edit/:id\", component: ${capitalized_name}Update }" )
+        all_routes_array+=( "{ path: \"${lower_name}s/delete/:id\", component: ${capitalized_name}Delete }" )
 
         # Acumular items para el menú en aside.ts
-        menu_items_str+=$(cat <<EOF
-            {
-                label: '${capitalized_name}s',
-                icon: 'pi pi-fw pi-box',
-                routerLink: '/${lower_name}s'
-            },
-EOF
-)
+        menu_items_array+=( $(cat <<ITEM
+{
+    label: '${capitalized_name}s',
+    icon: 'pi pi-fw pi-box',
+    routerLink: '/${lower_name}s'
+}
+ITEM
+))
     done
+
+    # Unir los elementos de los arrays con los separadores correctos
+    local all_imports=$(printf "%s\n" "${all_imports_array[@]}")
+    local all_routes=$(printf "    %s,\n" "${all_routes_array[@]}")
+    # Quitar la última coma de las rutas
+    all_routes=$(echo "${all_routes}" | sed 's/,$//')
+    local menu_items_str=$(IFS=,; echo "${menu_items_array[*]}")
 
     print_msg "Actualizando src/app/app.routes.ts..."
     cat << EOF > src/app/app.routes.ts
@@ -530,8 +522,6 @@ ${all_routes}
 EOF
 
     print_msg "Actualizando el menú en src/app/components/layout/aside/aside.ts..."
-    # Quitamos la última coma de la cadena de items del menú
-    menu_items_str=$(echo "${menu_items_str}" | sed 's/,$//')
     cat << EOF > src/app/components/layout/aside/aside.ts
 import { Component, OnInit } from '@angular/core';
 import { MenuItem } from 'primeng/api';
