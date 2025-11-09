@@ -8,6 +8,7 @@ BLUE='\033[0;34m'
 NC='\033[0m' # Sin color
 
 PROJECT_NAME="" # Variable global para el nombre del proyecto
+PROJECTS_DIR=".." # Directorio donde se buscan y crean los proyectos
 
 # --- Funciones de Utilidad ---
 print_msg() {
@@ -36,11 +37,11 @@ clear_console() {
 
 select_existing_project() {
     print_step "Seleccionar un proyecto existente"
-    print_msg "Buscando proyectos (directorios) en la ubicación actual..."
+    print_msg "Buscando proyectos (directorios) en: $(realpath "$PROJECTS_DIR")"
     
     # Reemplazamos mapfile (bash-specific) con un bucle while read para compatibilidad con sh.
     projects=()
-    while IFS= read -r line; do projects+=("$line"); done < <(find . -maxdepth 1 -mindepth 1 -type d -not -name ".*" -printf "%f\n")
+    while IFS= read -r line; do projects+=("$line"); done < <(find "$PROJECTS_DIR" -maxdepth 1 -mindepth 1 -type d -not -name ".*" -printf "%f\n")
 
     if [ ${#projects[@]} -eq 0 ]; then
         print_error "No se encontraron directorios de proyectos en la ubicación actual."
@@ -84,27 +85,35 @@ create_angular_project() {
     fi
 
     print_step "Creando proyecto Angular '$project_name'"
-    if [ -d "$project_name" ]; then
+    if [ -d "$PROJECTS_DIR/$project_name" ]; then
         print_error "El directorio '$project_name' ya existe. Por favor, elimínalo o cámbiale el nombre."
         return 1
     fi
+
+    # Guardamos el directorio actual para poder volver después
+    local original_dir
+    original_dir=$(pwd)
+
+    # Nos movemos al directorio de proyectos para evitar problemas con rutas relativas en 'ng new'
+    cd "$PROJECTS_DIR" || { print_error "No se pudo acceder al directorio de proyectos."; return 1; }
 
     # Creamos el proyecto como standalone y con routing
     ng new "$project_name" --routing=true --style=css --standalone=true --skip-install
     if [ $? -ne 0 ]; then
         print_error "Falló la creación del proyecto Angular."
+        cd "$original_dir" # Volvemos al directorio original en caso de error
         return 1
     fi
     
     # Establecer el nombre del proyecto globalmente
     PROJECT_NAME="$project_name"
     print_success "Proyecto activo establecido a: '$PROJECT_NAME'"
-
-    cd "$PROJECT_NAME" || exit
+    
+    cd "$PROJECT_NAME" || { print_error "No se pudo entrar al directorio del nuevo proyecto."; cd "$original_dir"; return 1; }
     print_success "Proyecto '$project_name' creado. Instalando dependencias..."
     npm install
     print_success "Dependencias de Angular instaladas."
-    cd ..
+    cd "$original_dir" # Volvemos al directorio original del script
 }
 
 install_primeng() {
@@ -113,13 +122,12 @@ install_primeng() {
         print_error "No has seleccionado un proyecto. Por favor, crea o selecciona uno primero."
         return 1
     fi
-    cd "$PROJECT_NAME" || { print_error "No se encontró el directorio del proyecto '$PROJECT_NAME'."; return 1; }
+    cd "$PROJECTS_DIR/$PROJECT_NAME" || { print_error "No se encontró el directorio del proyecto '$PROJECT_NAME'."; return 1; }
 
     print_msg "Instalando primeng y @primeuix/themes..."
     npm install primeng @primeuix/themes
     if [ $? -ne 0 ]; then
         print_error "Falló la instalación de PrimeNG."
-        cd ..
         return 1
     fi
 
@@ -150,7 +158,6 @@ install_primeng() {
                 ;;
             "Cancelar")
                 print_error "Instalación de tema cancelada por el usuario."
-                cd ..
                 return 1
                 ;;
             *) echo "Opción inválida $REPLY";;
@@ -202,7 +209,9 @@ export const appConfig: ApplicationConfig = {
 };
 EOF_CONFIG
 
-    cd ..
+    # Volvemos al directorio original del script
+    local script_dir; script_dir=$(dirname "$(realpath "$0")")
+    cd "$script_dir" || return
 }
 
 install_tailwind() {
@@ -211,12 +220,11 @@ install_tailwind() {
         print_error "No has seleccionado un proyecto. Por favor, crea o selecciona uno primero."
         return 1
     fi
-    cd "$PROJECT_NAME" || { print_error "No se encontró el directorio del proyecto '$PROJECT_NAME'."; return 1; }
+    cd "$PROJECTS_DIR/$PROJECT_NAME" || { print_error "No se encontró el directorio del proyecto '$PROJECT_NAME'."; return 1; }
     
     npm install tailwindcss @tailwindcss/postcss postcss --force
     if [ $? -ne 0 ]; then
         print_error "Falló la instalación de Tailwind."
-        cd ..
         return 1
     fi
 
@@ -237,7 +245,10 @@ EOF
     (echo "@import \"tailwindcss\";"; cat src/styles.css.tmp) > src/styles.css
 
     print_success "Tailwind CSS instalado y configurado."
-    cd ..
+
+    # Volvemos al directorio original del script
+    local script_dir; script_dir=$(dirname "$(realpath "$0")")
+    cd "$script_dir" || return
 }
 
 create_layout_components() {
@@ -247,7 +258,7 @@ create_layout_components() {
         return 1
     fi
     print_msg "Trabajando en el proyecto: $PROJECT_NAME"
-    cd "$PROJECT_NAME" || { print_error "No se encontró el directorio del proyecto '$PROJECT_NAME'."; return 1; }
+    cd "$PROJECTS_DIR/$PROJECT_NAME" || { print_error "No se encontró el directorio del proyecto '$PROJECT_NAME'."; return 1; }
 
     print_msg "Generando componentes Header, Aside, y Footer..."
     ng g c components/layout/header
@@ -350,7 +361,10 @@ EOF
 EOF
 
     print_success "Componentes de Layout creados y App actualizada (con nombres de archivo v20)."
-    cd ..
+
+    # Volvemos al directorio original del script
+    local script_dir; script_dir=$(dirname "$(realpath "$0")")
+    cd "$script_dir" || return
 }
 
 implement_panel_menu() {
@@ -360,13 +374,12 @@ implement_panel_menu() {
         return 1
     fi
     print_msg "Trabajando en el proyecto: $PROJECT_NAME"
-    cd "$PROJECT_NAME" || { print_error "No se encontró el directorio del proyecto '$PROJECT_NAME'."; return 1; }
+    cd "$PROJECTS_DIR/$PROJECT_NAME" || { print_error "No se encontró el directorio del proyecto '$PROJECT_NAME'."; return 1; }
 
     # --- INICIO DE LA MODIFICACIÓN: MENÚ DINÁMICO ---
     read -p "Introduce el número de elementos de menú (tablas) que deseas crear: " num_tables
     if ! [[ "$num_tables" =~ ^[1-9][0-9]*$ ]]; then
         print_error "Por favor, introduce un número entero positivo."
-        cd ..
         return 1
     fi
 
@@ -445,110 +458,10 @@ ngOnInit() {
 END_OF_TS
 
     print_success "PanelMenu implementado en Aside (con nombres de archivo v20)."
-    cd ..
+# Volvemos al directorio original del script
+    local script_dir; script_dir=$(dirname "$(realpath "$0")")
+    cd "$script_dir" || return
 }
-
-create_crud_apis() {
-    print_step "Generando componentes CRUD y rutas para las APIs"
-    if [ -z "$PROJECT_NAME" ]; then
-        print_error "No has seleccionado un proyecto. Por favor, crea o selecciona uno primero."
-        return 1
-    fi
-    cd "$PROJECT_NAME" || { print_error "No se encontró el directorio del proyecto '$PROJECT_NAME'."; return 1; }
-
-    # Verificar si el archivo con los nombres de las tablas existe
-    if [ ! -f ".table_names" ]; then
-        print_error "No se encontró el archivo '.table_names'. Por favor, ejecuta primero el paso 'Implementar PanelMenu en Aside' (Opción 6 del menú anterior)."
-        cd ..; return 1
-    fi
-
-    # Leer los nombres de las tablas
-    mapfile -t table_names < .table_names
-    print_msg "Se generarán APIs para las siguientes tablas: ${table_names[*]}"
-
-    local all_imports=""
-    local all_routes=""
-    local menu_items_str=""
-
-    for table_name in "${table_names[@]}"; do
-        local lower_name="$table_name"
-        local capitalized_name="$(tr '[:lower:]' '[:upper:]' <<< ${lower_name:0:1})${lower_name:1}"
-
-        print_msg "Generando componentes CRUD para '$capitalized_name'..."
-        ng g c "components/${lower_name}/getall"
-        ng g c "components/${lower_name}/create"
-        ng g c "components/${lower_name}/update"
-        ng g c "components/${lower_name}/delete"
-
-        # ✅ Corrección 1: importar sin ".component"
-        all_imports+=$(cat <<EOF
-import { Getall as ${capitalized_name}Getall } from './components/${lower_name}/getall/getall';
-import { Create as ${capitalized_name}Create } from './components/${lower_name}/create/create';
-import { Update as ${capitalized_name}Update } from './components/${lower_name}/update/update';
-import { Delete as ${capitalized_name}Delete } from './components/${lower_name}/delete/delete';
-EOF
-)
-
-        # ✅ Corrección 2: rutas sin plural
-        all_routes+=$(cat <<EOF
-    { path: "${lower_name}", component: ${capitalized_name}Getall },
-    { path: "${lower_name}/new", component: ${capitalized_name}Create },
-    { path: "${lower_name}/edit/:id", component: ${capitalized_name}Update },
-    { path: "${lower_name}/delete/:id", component: ${capitalized_name}Delete },
-EOF
-)
-
-        # ✅ Corrección 3: aside con comas y sin plural
-        menu_items_str+=$(cat <<EOF
-            { label: '${capitalized_name}', icon: 'pi pi-fw pi-box', routerLink: '/${lower_name}' },
-EOF
-)
-    done
-
-    # Quitar la última coma para evitar errores
-    menu_items_str=$(echo "${menu_items_str}" | sed 's/,$//')
-
-    print_msg "Actualizando src/app/app.routes.ts..."
-    cat << EOF > src/app/app.routes.ts
-import { Routes } from '@angular/router';
-
-${all_imports}
-
-export const routes: Routes = [
-    { path: '', redirectTo: '/', pathMatch: 'full' },
-${all_routes}
-];
-EOF
-
-    print_msg "Actualizando el menú en src/app/components/layout/aside/aside.ts..."
-    cat << EOF > src/app/components/layout/aside/aside.ts
-import { Component, OnInit } from '@angular/core';
-import { MenuItem } from 'primeng/api';
-import { PanelMenuModule } from 'primeng/panelmenu';
-import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
-
-@Component({
-  selector: 'app-aside',
-  standalone: true,
-  imports: [CommonModule, PanelMenuModule, RouterLink],
-  templateUrl: './aside.html',
-  styleUrl: './aside.css'
-})
-export class Aside implements OnInit {
-    items: MenuItem[] | undefined;
-    ngOnInit() {
-        this.items = [
-${menu_items_str}
-        ];
-    }
-}
-EOF
-
-    print_success "Componentes CRUD, rutas e importaciones corregidas correctamente."
-    cd ..
-}
-
 
 run_all_steps() {
     print_step "EJECUTANDO TODOS LOS PASOS"
@@ -569,12 +482,14 @@ start_server() {
         print_error "No has seleccionado un proyecto. Por favor, crea o selecciona uno primero."
         return 1
     fi
-    cd "$PROJECT_NAME" || { print_error "No se encontró el directorio del proyecto '$PROJECT_NAME'."; return 1; }
+    cd "$PROJECTS_DIR/$PROJECT_NAME" || { print_error "No se encontró el directorio del proyecto '$PROJECT_NAME'."; return 1; }
     print_msg "Ejecutando 'ng serve --open'. Presiona CTRL+C para detener."
     ng serve --open
-    cd ..
-}
 
+    # Volvemos al directorio original del script cuando el servidor se detiene
+    local script_dir; script_dir=$(dirname "$(realpath "$0")")
+    cd "$script_dir" || return
+}
 # --- Menú Principal ---
 show_part1_menu() {
     while true; do
@@ -606,36 +521,3 @@ show_part1_menu() {
         [ "$sub_choice" != "9" ] && [ "$sub_choice" != "8" ] && press_enter_to_continue
     done
 }
-
-main_menu() {
-    while true; do
-        
-        echo -e "\n${BLUE}========== MENÚ DE AUTOMATIZACIÓN ==========${NC}"
-        echo -e "Este script creará un directorio para tu proyecto en la"
-        echo -e "ubicación actual (${YELLOW}$(pwd)${NC})."
-        if [ -n "$PROJECT_NAME" ]; then
-            echo -e "Proyecto activo: ${GREEN}$PROJECT_NAME${NC}"
-        fi
-        echo ""
-        echo "1. Seleccionar un proyecto existente"
-        echo "2. Parte Básica con PrimeNG (Crear y configurar proyecto)"
-        echo "3. Generar APIs y Rutas CRUD (Frontend)"
-        echo "4. Autenticación y Autorización (No implementado)"
-        echo "5. CRUD Modelo Client (No implementado)"
-        echo "6. Salir"
-        read -p "Elige una sección: " choice
-
-        case $choice in
-            1) select_existing_project; press_enter_to_continue ;;
-            2) show_part1_menu ;;
-            3) create_crud_apis; press_enter_to_continue ;;
-            4) print_msg "Sección 4 no implementada."; press_enter_to_continue ;;
-            5) print_msg "Sección 5 no implementada."; press_enter_to_continue ;;
-            6) echo "Saliendo..."; exit 0 ;;
-            *) print_error "Opción no válida." ;;
-        esac
-    done
-}
-
-# --- Iniciar el script ---
-main_menu
