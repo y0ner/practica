@@ -1,6 +1,6 @@
 # Ignorar node_modules de ambos proyectos
 /frontend/node_modules/
-/backend_dogs/node_modules/
+/clase-front/node_modules/
 
 # Archivos comunes a ignorar
 .env

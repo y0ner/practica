@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { MessageService } from 'primeng/api';
@@ -12,10 +12,10 @@ import { CardModule } from 'primeng/card';
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, ButtonModule, InputTextModule, ToastModule, CardModule, RouterLink, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, ButtonModule, InputTextModule, ToastModule, CardModule],
   templateUrl: './login.html',
   styleUrl: './login.css',
-  providers: [MessageService]
+  providers: [MessageService, AuthService]
 })
 export class Login {
   form: FormGroup;
@@ -46,7 +46,7 @@ export class Login {
             detail: 'Sesión iniciada correctamente'
           });
           setTimeout(() => {
-            this.router.navigate(['/']); // Redirigir a la raíz protegida
+            this.router.navigate(['/clients']);
           }, 1000);
         },
         error: (error) => {
@@ -60,7 +60,32 @@ export class Login {
         }
       });
     } else {
-      this.form.markAllAsTouched();
+      this.markFormGroupTouched();
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Advertencia',
+        detail: 'Por favor complete todos los campos requeridos'
+      });
     }
+  }
+
+  goToRegister(): void {
+    this.router.navigate(['/register']);
+  }
+
+  private markFormGroupTouched(): void {
+    Object.keys(this.form.controls).forEach(key => {
+      this.form.get(key)?.markAsTouched();
+    });
+  }
+
+  getFieldError(fieldName: string): string {
+    const field = this.form.get(fieldName);
+    if (field?.errors && field?.touched) {
+      if (field.errors['required']) return `${fieldName} es requerido`;
+      if (field.errors['email']) return 'Email no válido';
+      if (field.errors['minlength']) return `${fieldName} debe tener al menos ${field.errors['minlength'].requiredLength} caracteres`;
+    }
+    return '';
   }
 }

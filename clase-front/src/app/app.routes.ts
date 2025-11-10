@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 import { Login } from './components/auth/login/login';
 import { Register } from './components/auth/register/register';
-import { AuthGuard } from './guards/authguard';
+import { authGuard } from './guards/authguard';
 
 // Client components with aliases
 import { Getall as ClientGetall } from './components/Clientes/getall/getall';
@@ -17,7 +17,7 @@ import { Delete as SaleDelete } from './components/Ventas/delete/delete';
 export const routes: Routes = [
     { 
         path: '', 
-        redirectTo: '/login', 
+        redirectTo: '/', 
         pathMatch: 'full' 
     },
     {
@@ -31,41 +31,41 @@ export const routes: Routes = [
     {
         path: "Clientes",
         component: ClientGetall,
-        canActivate: [AuthGuard]
+        canActivate: [authGuard]
     },
     {
         path: "Clientes/new",
         component: ClientCreate,
-        canActivate: [AuthGuard]
+        canActivate: [authGuard]
     },
     {
         path: "Clientes/edit/:id",
         component: ClientUpdate,
-        canActivate: [AuthGuard]
+        canActivate: [authGuard]
     },
     {
         path: "Clientes/delete/:id",
         component: ClientDelete,
-        canActivate: [AuthGuard]
+        canActivate: [authGuard]
     },    {
         path: "Ventas",
         component: SaleGetall,
-        canActivate: [AuthGuard]
+        canActivate: [authGuard]
     },
     {
         path: "Ventas/new",
         component: SaleCreate,
-        canActivate: [AuthGuard]
+        canActivate: [authGuard]
     },
     {
         path: "Ventas/edit/:id",
         component: SaleUpdate,
-        canActivate: [AuthGuard]
+        canActivate: [authGuard]
     },
     {
         path: "Ventas/delete/:id",
         component: SaleDelete,
-        canActivate: [AuthGuard]
+        canActivate: [authGuard]
     },
     {
         path: "**",

@@ -48,22 +48,22 @@ EOF
     {
         path: "${table_name}",
         component: ${capitalized_model_name}Getall,
-        canActivate: [AuthGuard]
+        canActivate: [authGuard]
     },
     {
         path: "${table_name}/new",
         component: ${capitalized_model_name}Create,
-        canActivate: [AuthGuard]
+        canActivate: [authGuard]
     },
     {
         path: "${table_name}/edit/:id",
         component: ${capitalized_model_name}Update,
-        canActivate: [AuthGuard]
+        canActivate: [authGuard]
     },
     {
         path: "${table_name}/delete/:id",
         component: ${capitalized_model_name}Delete,
-        canActivate: [AuthGuard]
+        canActivate: [authGuard]
     },
 EOF
 )
@@ -75,7 +75,7 @@ EOF
 import { Routes } from '@angular/router';
 import { Login } from './components/auth/login/login';
 import { Register } from './components/auth/register/register';
-import { AuthGuard } from './guards/authguard';
+import { authGuard } from './guards/authguard';
 ${imports_block}
 
 export const routes: Routes = [

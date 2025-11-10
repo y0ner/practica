@@ -16,7 +16,7 @@ interface PaginatedResponse<T> {
   providedIn: 'root'
 })
 export class SaleService {
-  private baseUrl = 'http://localhost:8000/api/Ventas';
+  private baseUrl = 'http://localhost:4000/api/ventas';
   private VentasSubject = new BehaviorSubject<SaleResponseI[]>([]);
   public Ventas$ = this.VentasSubject.asObservable();
 

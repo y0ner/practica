@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, AbstractControl } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { MessageService } from 'primeng/api';
@@ -12,7 +12,7 @@ import { CardModule } from 'primeng/card';
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, ButtonModule, InputTextModule, ToastModule, CardModule, RouterLink, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, ButtonModule, InputTextModule, ToastModule, CardModule],
   templateUrl: './register.html',
   styleUrl: './register.css',
   providers: [MessageService]
@@ -35,13 +35,20 @@ export class Register {
     }, { validators: this.passwordMatchValidator });
   }
 
+  // Validador personalizado para confirmar contraseñas
   passwordMatchValidator(control: AbstractControl) {
     const password = control.get('password');
     const confirmPassword = control.get('confirmPassword');
-    if (password?.value !== confirmPassword?.value) {
-      confirmPassword?.setErrors({ passwordMismatch: true });
+
+    if (password && confirmPassword && password.value !== confirmPassword.value) {
+      confirmPassword.setErrors({ passwordMismatch: true });
       return { passwordMismatch: true };
     }
+
+    if (confirmPassword?.hasError('passwordMismatch')) {
+      confirmPassword.setErrors(null);
+    }
+
     return null;
   }
 
@@ -58,10 +65,11 @@ export class Register {
             detail: 'Usuario registrado correctamente'
           });
           setTimeout(() => {
-            this.router.navigate(['/']);
+            this.router.navigate(['/clients']);
           }, 1000);
         },
         error: (error) => {
+          console.error('Error registering user:', error);
           this.messageService.add({
             severity: 'error',
             summary: 'Error',
@@ -71,7 +79,33 @@ export class Register {
         }
       });
     } else {
-      this.form.markAllAsTouched();
+      this.markFormGroupTouched();
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Advertencia',
+        detail: 'Por favor complete todos los campos requeridos'
+      });
     }
+  }
+
+  goToLogin(): void {
+    this.router.navigate(['/login']);
+  }
+
+  private markFormGroupTouched(): void {
+    Object.keys(this.form.controls).forEach(key => {
+      this.form.get(key)?.markAsTouched();
+    });
+  }
+
+  getFieldError(fieldName: string): string {
+    const field = this.form.get(fieldName);
+    if (field?.errors && field?.touched) {
+      if (field.errors['required']) return `${fieldName} es requerido`;
+      if (field.errors['email']) return 'Email no válido';
+      if (field.errors['minlength']) return `${fieldName} debe tener al menos ${field.errors['minlength'].requiredLength} caracteres`;
+      if (field.errors['passwordMismatch']) return 'Las contraseñas no coinciden';
+    }
+    return '';
   }
 }

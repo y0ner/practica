@@ -16,7 +16,7 @@ interface PaginatedResponse<T> {
   providedIn: 'root'
 })
 export class ClientService {
-  private baseUrl = 'http://localhost:8000/api/Clientes';
+  private baseUrl = 'http://localhost:4000/api/Clientes';
   private ClientesSubject = new BehaviorSubject<ClientResponseI[]>([]);
   public Clientes$ = this.ClientesSubject.asObservable();
 
