@@ -1,108 +1,83 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { TableModule } from 'primeng/table';
+import { CommonModule } from '@angular/common';
+import { ClientI } from '../../../models/Clientes';
 import { ButtonModule } from 'primeng/button';
-import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { ToastModule } from 'primeng/toast';
-import { TooltipModule } from 'primeng/tooltip';
-import { ConfirmationService, MessageService } from 'primeng/api';
-import { Subscription } from 'rxjs';
+import { RouterModule } from '@angular/router';
 import { ClientService } from '../../../services/Clientes.service';
-import { ClientResponseI } from '../../../models/Clientes';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { ConfirmationService, MessageService } from 'primeng/api';
+import { ToastModule } from 'primeng/toast';
 
 @Component({
-  selector: 'app-Clientes-getall',
-  standalone: true,
-  imports: [
-    CommonModule,
-    RouterModule,
-    TableModule,
-    ButtonModule,
-    ConfirmDialogModule,
-    ToastModule,
-    TooltipModule
-  ],
-  providers: [ConfirmationService, MessageService],
+  selector: 'app-getall',
+  imports: [TableModule, CommonModule, ButtonModule, RouterModule, ConfirmDialogModule, ToastModule],
   templateUrl: './getall.html',
-  styleUrl: './getall.css'
+  styleUrl: './getall.css',
+  encapsulation: ViewEncapsulation.None,
+  providers: [ConfirmationService, MessageService]
 })
-export class Getall implements OnInit, OnDestroy {
-  Clientes: ClientResponseI[] = [];
-  loading = false;
-  private subscription = new Subscription();
+export class Getall implements OnInit {
+  clients: ClientI[] = [];
+  loading: boolean = false;
 
   constructor(
-    private ClientesService: ClientService,
+    private clientService: ClientService,
     private confirmationService: ConfirmationService,
     private messageService: MessageService
   ) {}
 
   ngOnInit(): void {
-    this.loadData();
-
-    this.subscription.add(
-      this.ClientesService.Clientes$.subscribe(data => {
-        this.Clientes = data;
-      })
-    );
+    this.loadClients();
   }
 
-  ngOnDestroy(): void {
-    this.subscription.unsubscribe();
-  }
-
-  loadData(): void {
+  loadClients(): void {
     this.loading = true;
-    this.subscription.add(
-      this.ClientesService.getAll().subscribe({
-        next: () => {
-          this.loading = false;
-        },
-        error: (error) => {
-          this.messageService.add({
-            severity: 'error',
-            summary: 'Error',
-            detail: 'No se pudieron cargar los datos'
-          });
-          this.loading = false;
-        }
-      })
-    );
-  }
-
-  confirmDelete(item: ClientResponseI): void {
-    this.confirmationService.confirm({
-      message: `¿Está seguro de que desea eliminar este registro?`,
-      header: 'Confirmar Eliminación',
-      icon: 'pi pi-exclamation-triangle',
-      acceptLabel: 'Sí, eliminar',
-      rejectLabel: 'Cancelar',
-      acceptButtonStyleClass: 'p-button-danger',
-      accept: () => {
-        this.deleteItem(item.id!);
+    this.clientService.getAllClients().subscribe({
+      next: (clients) => {
+        this.clients = clients;
+        this.clientService.updateLocalClients(clients);
+        this.loading = false;
+      },
+      error: (error) => {
+        console.error('Error loading clients:', error);
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Error al cargar los clientes'
+        });
+        this.loading = false;
       }
     });
   }
 
-  deleteItem(id: number): void {
-    this.subscription.add(
-      this.ClientesService.delete(id).subscribe({
-        next: () => {
-          this.messageService.add({
-            severity: 'success',
-            summary: 'Éxito',
-            detail: 'Registro eliminado correctamente'
-          });
-        },
-        error: (error) => {
-          this.messageService.add({
-            severity: 'error',
-            summary: 'Error',
-            detail: 'No se pudo eliminar el registro'
+  deleteClient(client: ClientI): void {
+    this.confirmationService.confirm({
+      message: `¿Está seguro de eliminar el cliente ${client.name}?`,
+      header: 'Confirmar eliminación',
+      icon: 'pi pi-exclamation-triangle',
+      accept: () => {
+        if (client.id) {
+          this.clientService.deleteClient(client.id).subscribe({
+            next: () => {
+              this.messageService.add({
+                severity: 'success',
+                summary: 'Éxito',
+                detail: 'Cliente eliminado correctamente'
+              });
+              this.loadClients();
+            },
+            error: (error) => {
+              console.error('Error deleting client:', error);
+              this.messageService.add({
+                severity: 'error',
+                summary: 'Error',
+                detail: 'Error al eliminar el cliente'
+              });
+            }
           });
         }
-      })
-    );
+      }
+    });
   }
 }

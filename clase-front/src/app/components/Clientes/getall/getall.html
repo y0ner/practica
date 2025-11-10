@@ -1,66 +1,73 @@
 <div class="card p-8">
     <div class="flex justify-between items-center mb-4">
         <h2 class="text-2xl font-bold">Gestión de Clientes</h2>
-        <p-button
-            label="Nuevo Client"
+        <button
+            pButton
+            type="button"
+            class="p-button p-component bg-blue-500 hover:bg-blue-600 text-white"
             icon="pi pi-plus"
+            label="Nuevo Cliente"
             [routerLink]="['/clients/new']"
-            styleClass="p-button-success"
-        ></p-button>
+        >
+        </button>
     </div>
 
     <p-table 
-        [value]="Clientes" 
+        [value]="clients" 
         [loading]="loading"
+        stripedRows 
+        [tableStyle]="{'min-width': '50rem'}"
         [paginator]="true"
         [rows]="10"
         [showCurrentPageReport]="true"
         currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros"
-        [rowsPerPageOptions]="[5, 10, 25, 50]"
-        dataKey="id"
-        styleClass="p-datatable-striped"
-        [tableStyle]="{'min-width': '50rem'}"
     >
-        <ng-template pTemplate="header">
+        <ng-template #header>
             <tr>
-                <th pSortableColumn="id">
-                    ID <p-sortIcon field="id"></p-sortIcon>
-                </th>
-                <th pSortableColumn="address">
-                    Address <p-sortIcon field="address"></p-sortIcon>
-                </th>
-                <th pSortableColumn="email">
-                    Email <p-sortIcon field="email"></p-sortIcon>
-                </th>
-                <th pSortableColumn="name">
-                    Name <p-sortIcon field="name"></p-sortIcon>
-                </th>
-                <th pSortableColumn="phone">
-                    Phone <p-sortIcon field="phone"></p-sortIcon>
-                </th>
+                <th class="text-left">ID</th>
+                <th class="text-left">Nombre</th>
+                <th class="text-left">Dirección</th>
+                <th class="text-left">Teléfono</th>
+                <th class="text-left">Email</th>
+                <th class="text-left">Estado</th>
                 <th class="text-center">Acciones</th>
             </tr>
         </ng-template>
-
-        <ng-template pTemplate="body" let-client>
+        <ng-template #body let-client>
             <tr>
-                <td>{{ client.id }}</td>
-                <td>{{ client.address }}</td>
-                <td>{{ client.email }}</td>
-                <td>{{ client.name }}</td>
-                <td>{{ client.phone }}</td>
+                <td>{{client.id}}</td>
+                <td>{{client.name}}</td>
+                <td>{{client.address}}</td>
+                <td>{{client.phone}}</td>
+                <td>{{client.email}}</td>
+                <td>
+                    <span 
+                        class="px-2 py-1 rounded text-xs font-semibold"
+                        [class]="client.status === 'ACTIVE' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'"
+                    >
+                        {{client.status}}
+                    </span>
+                </td>
                 <td class="text-center">
                     <div class="flex justify-center gap-2">
-                        <p-button icon="pi pi-pencil" [routerLink]="['/Clientes/edit', client.id]" styleClass="p-button-rounded p-button-text p-button-warning" pTooltip="Editar" tooltipPosition="top"></p-button>
-                        <p-button icon="pi pi-trash" (onClick)="confirmDelete(client)" styleClass="p-button-rounded p-button-text p-button-danger" pTooltip="Eliminar" tooltipPosition="top"></p-button>
+                        <button
+                            pButton
+                            type="button"
+                            icon="pi pi-pencil"
+                            class="p-button-rounded p-button-text p-button-warning"
+                            [routerLink]="['/clients/edit', client.id]"
+                            pTooltip="Editar"
+                        ></button>
+                        <button
+                            pButton
+                            type="button"
+                            icon="pi pi-trash"
+                            class="p-button-rounded p-button-text p-button-danger"
+                            (click)="deleteClient(client)"
+                            pTooltip="Eliminar"
+                        ></button>
                     </div>
                 </td>
-            </tr>
-        </ng-template>
-
-        <ng-template pTemplate="emptymessage">
-            <tr>
-                <td colspan="6" class="text-center p-4">No se encontraron registros</td>
             </tr>
         </ng-template>
     </p-table>

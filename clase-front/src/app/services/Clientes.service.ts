@@ -1,85 +1,70 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, BehaviorSubject, tap, catchError, throwError } from 'rxjs';
-import { map } from 'rxjs/operators';
-import { ClientI, ClientResponseI } from '../models/Clientes';
-
-// Interfaz para la respuesta paginada de Django
-interface PaginatedResponse<T> {
-  count: number;
-  next: string | null;
-  previous: string | null;
-  results: T[];
-}
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Observable, BehaviorSubject, tap } from 'rxjs';
+import { ClientI} from '../models/Clientes';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ClientService {
   private baseUrl = 'http://localhost:4000/api/Clientes';
-  private ClientesSubject = new BehaviorSubject<ClientResponseI[]>([]);
-  public Clientes$ = this.ClientesSubject.asObservable();
+  private clientsSubject = new BehaviorSubject<ClientI[]>([]);
+  public clients$ = this.clientsSubject.asObservable();
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private authService: AuthService
+  ) {}
 
-  getAll(): Observable<ClientResponseI[]> {
-    return this.http.get<PaginatedResponse<ClientResponseI>>(`${this.baseUrl}/`)
-      .pipe(
-        map(response => response.results), // Extraer solo el array de results
-        tap(Clientes => {
-          this.ClientesSubject.next(Clientes);
-        }),
-        catchError(error => {
-          console.error('Error fetching Clientes:', error);
-          return throwError(() => error);
-        })
-      );
+  private getHeaders(): HttpHeaders {
+    let headers = new HttpHeaders();
+    const token = this.authService.getToken();
+    if (token) {
+      headers = headers.set('Authorization', `Bearer ${token}`);
+    }
+    return headers;
   }
 
-  getById(id: number): Observable<ClientResponseI> {
-    return this.http.get<ClientResponseI>(`${this.baseUrl}/${id}/`)
-      .pipe(
-        catchError(error => {
-          console.error('Error fetching Client:', error);
-          return throwError(() => error);
-        })
-      );
+
+  getAllClients(): Observable<ClientI[]> {
+    return this.http.get<ClientI[]>(this.baseUrl, { headers: this.getHeaders() })
+    // .pipe(
+    //   tap(response => {
+    //       // console.log('Fetched clients:', response);
+    //     })
+    // )
+    ;
   }
 
-  create(data: ClientI): Observable<ClientResponseI> {
-    return this.http.post<ClientResponseI>(`${this.baseUrl}/`, data)
-      .pipe(
-        tap(() => this.refresh()),
-        catchError(error => {
-          console.error('Error creating Client:', error);
-          return throwError(() => error);
-        })
-      );
+  getClientById(id: number): Observable<ClientI> {
+    return this.http.get<ClientI>(`${this.baseUrl}/${id}`, { headers: this.getHeaders() });
   }
 
-  update(id: number, data: Partial<ClientI>): Observable<ClientResponseI> {
-    return this.http.put<ClientResponseI>(`${this.baseUrl}/${id}/`, data)
-      .pipe(
-        tap(() => this.refresh()),
-        catchError(error => {
-          console.error('Error updating Client:', error);
-          return throwError(() => error);
-        })
-      );
+  createClient(client: ClientI): Observable<ClientI> {
+    return this.http.post<ClientI>(this.baseUrl, client, { headers: this.getHeaders() });
   }
 
-  delete(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.baseUrl}/${id}/`)
-      .pipe(
-        tap(() => this.refresh()),
-        catchError(error => {
-          console.error('Error deleting Client:', error);
-          return throwError(() => error);
-        })
-      );
+  updateClient(id: number, client: ClientI): Observable<ClientI> {
+    return this.http.patch<ClientI>(`${this.baseUrl}/${id}`, client, { headers: this.getHeaders() });
   }
 
-  refresh(): void {
-    this.getAll().subscribe();
+  deleteClient(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/${id}`, { headers: this.getHeaders() });
+  }
+
+  deleteClientLogic(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/${id}/logic`, { headers: this.getHeaders() });
+  }
+
+  // Método para actualizar el estado local de clientes
+  updateLocalClients(clients: ClientI[]): void {
+    this.clientsSubject.next(clients);
+  }
+
+  refreshClients(): void {
+    this.getAllClients().subscribe(clients => {
+      this.clientsSubject.next(clients);
+    });
   }
 }
