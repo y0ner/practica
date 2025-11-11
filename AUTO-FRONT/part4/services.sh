@@ -40,38 +40,49 @@ create_dynamic_services() {
             print_info "Modelo encontrado para '${table_name}': '${model_name}'"
         fi
 
-        local capitalized_plural_name="$(echo "${table_name:0:1}" | tr '[:lower:]' '[:upper:]')${table_name:1}"
+        # Derivar la clave de respuesta del backend (ej. 'Client' -> 'clients')
+        local response_key=$(echo "$model_name" | tr '[:upper:]' '[:lower:]')s
 
         local service_file_content
         service_file_content=$(cat <<EOF
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, BehaviorSubject, tap, catchError, throwError } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { ${model_name}I, ${model_name}ResponseI } from '../models/${table_name}';
+import { AuthService } from './auth.service';
 
-// Interfaz para la respuesta paginada de Django
-interface PaginatedResponse<T> {
-  count: number;
-  next: string | null;
-  previous: string | null;
-  results: T[];
+// Interfaz para la respuesta del backend (espera un objeto con una propiedad que es el array)
+interface ${model_name}ApiResponse {
+  ${response_key}: ${model_name}ResponseI[];
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class ${model_name}Service {
-  private baseUrl = 'http://localhost:8000/api/${table_name}';
+  private baseUrl = 'http://localhost:4000/api/${table_name}';
   private ${table_name}Subject = new BehaviorSubject<${model_name}ResponseI[]>([]);
   public ${table_name}\$ = this.${table_name}Subject.asObservable();
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private authService: AuthService
+  ) {}
+
+  private getHeaders(): HttpHeaders {
+    let headers = new HttpHeaders();
+    const token = this.authService.getToken();
+    if (token) {
+      headers = headers.set('Authorization', \`Bearer \${token}\`);
+    }
+    return headers;
+  }
 
   getAll(): Observable<${model_name}ResponseI[]> {
-    return this.http.get<PaginatedResponse<${model_name}ResponseI>>(\`\${this.baseUrl}/\`)
+    return this.http.get<${model_name}ApiResponse>(this.baseUrl, { headers: this.getHeaders() })
       .pipe(
-        map(response => response.results), // Extraer solo el array de results
+        map(response => response.${response_key}), // Extraer el array de la propiedad
         tap(${table_name} => {
           this.${table_name}Subject.next(${table_name});
         }),
@@ -83,17 +94,17 @@ export class ${model_name}Service {
   }
 
   getById(id: number): Observable<${model_name}ResponseI> {
-    return this.http.get<${model_name}ResponseI>(\`\${this.baseUrl}/\${id}/\`)
+    return this.http.get<${model_name}ResponseI>(\`\${this.baseUrl}/\${id}\`, { headers: this.getHeaders() })
       .pipe(
         catchError(error => {
-          console.error('Error fetching ${model_name}:', error);
+          console.error(\`Error fetching ${model_name} with id \${id}:\`, error);
           return throwError(() => error);
         })
       );
   }
 
   create(data: ${model_name}I): Observable<${model_name}ResponseI> {
-    return this.http.post<${model_name}ResponseI>(\`\${this.baseUrl}/\`, data)
+    return this.http.post<${model_name}ResponseI>(this.baseUrl, data, { headers: this.getHeaders() })
       .pipe(
         tap(() => this.refresh()),
         catchError(error => {
@@ -104,22 +115,33 @@ export class ${model_name}Service {
   }
 
   update(id: number, data: Partial<${model_name}I>): Observable<${model_name}ResponseI> {
-    return this.http.put<${model_name}ResponseI>(\`\${this.baseUrl}/\${id}/\`, data)
+    return this.http.patch<${model_name}ResponseI>(\`\${this.baseUrl}/\${id}\`, data, { headers: this.getHeaders() })
       .pipe(
         tap(() => this.refresh()),
         catchError(error => {
-          console.error('Error updating ${model_name}:', error);
+          console.error(\`Error updating ${model_name} with id \${id}:\`, error);
           return throwError(() => error);
         })
       );
   }
 
   delete(id: number): Observable<void> {
-    return this.http.delete<void>(\`\${this.baseUrl}/\${id}/\`)
+    return this.http.delete<void>(\`\${this.baseUrl}/\${id}\`, { headers: this.getHeaders() })
       .pipe(
         tap(() => this.refresh()),
         catchError(error => {
-          console.error('Error deleting ${model_name}:', error);
+          console.error(\`Error deleting ${model_name} with id \${id}:\`, error);
+          return throwError(() => error);
+        })
+      );
+  }
+
+  deleteLogic(id: number): Observable<void> {
+    return this.http.delete<void>(\`\${this.baseUrl}/\${id}/logic\`, { headers: this.getHeaders() })
+      .pipe(
+        tap(() => this.refresh()),
+        catchError(error => {
+          console.error(\`Error logic-deleting ${model_name} with id \${id}:\`, error);
           return throwError(() => error);
         })
       );
@@ -127,6 +149,10 @@ export class ${model_name}Service {
 
   refresh(): void {
     this.getAll().subscribe();
+  }
+
+  updateLocalData(${table_name}: ${model_name}ResponseI[]): void {
+    this.${table_name}Subject.next(${table_name});
   }
 }
 EOF

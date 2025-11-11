@@ -1,6 +1,5 @@
-# Ignorar node_modules de ambos proyectos
-/frontend/node_modules/
-/clase-front/node_modules/
+# Ignorar todas las carpetas node_modules en cualquier nivel
+**/node_modules/
 
 # Archivos comunes a ignorar
 .env

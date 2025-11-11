@@ -47,7 +47,7 @@ import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToastModule } from 'primeng/toast';
-import { TooltipModule } from 'primeng/tooltip';
+import { TooltipModule } from 'primeng/tooltip'; // Mantener TooltipModule
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { Subscription } from 'rxjs';
 import { ${model_name}Service } from '../../../services/${table_name}.service';
@@ -63,7 +63,7 @@ import { ${model_name}ResponseI } from '../../../models/${table_name}';
     ButtonModule,
     ConfirmDialogModule,
     ToastModule,
-    TooltipModule
+    TooltipModule // Mantener TooltipModule
   ],
   providers: [ConfirmationService, MessageService],
   templateUrl: './getall.html',
@@ -71,7 +71,7 @@ import { ${model_name}ResponseI } from '../../../models/${table_name}';
 })
 export class Getall implements OnInit, OnDestroy {
   ${table_name}: ${model_name}ResponseI[] = [];
-  loading = false;
+  loading: boolean = false;
   private subscription = new Subscription();
 
   constructor(
@@ -81,13 +81,7 @@ export class Getall implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.loadData();
-
-    this.subscription.add(
-      this.${table_name}Service.${table_name}\$.subscribe(data => {
-        this.${table_name} = data;
-      })
-    );
+    this.loadData(); // Carga inicial de datos
   }
 
   ngOnDestroy(): void {
@@ -98,12 +92,14 @@ export class Getall implements OnInit, OnDestroy {
     this.loading = true;
     this.subscription.add(
       this.${table_name}Service.getAll().subscribe({
-        next: () => {
+        next: (data) => {
+          this.${table_name} = data;
+          this.${table_name}Service.updateLocalData(data);
           this.loading = false;
         },
         error: (error) => {
           this.messageService.add({
-            severity: 'error',
+            severity: 'error', // Corregido: severity
             summary: 'Error',
             detail: 'No se pudieron cargar los datos'
           });
@@ -115,7 +111,7 @@ export class Getall implements OnInit, OnDestroy {
 
   confirmDelete(item: ${model_name}ResponseI): void {
     this.confirmationService.confirm({
-      message: \`¿Está seguro de que desea eliminar este registro?\`,
+      message: \`¿Está seguro de que desea eliminar el registro \${item.id}?\`,
       header: 'Confirmar Eliminación',
       icon: 'pi pi-exclamation-triangle',
       acceptLabel: 'Sí, eliminar',
@@ -136,6 +132,7 @@ export class Getall implements OnInit, OnDestroy {
             summary: 'Éxito',
             detail: 'Registro eliminado correctamente'
           });
+          this.loadData(); // Recargar datos después de eliminar
         },
         error: (error) => {
           this.messageService.add({

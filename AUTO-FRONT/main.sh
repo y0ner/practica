@@ -37,7 +37,7 @@ main_menu() {
         case $choice in
             1) select_existing_project; press_enter_to_continue ;;
             2) show_part1_menu; press_enter_to_continue ;;
-            3) show_part2_menu; press_enter_to_continue ;;
+            3) create_crud_apis; press_enter_to_continue ;;
             4) setup_authentication; press_enter_to_continue ;;
             5) show_part4_menu; press_enter_to_continue ;;
             6) start_server ;;

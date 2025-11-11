@@ -53,43 +53,101 @@ create_dynamic_models() {
             fi
         done
 
-        local interface_body=""
-        local response_interface_body=""
+        declare -a all_attributes=()
 
         # 3. Bucle para cada atributo
         for (( i=1; i<=num_attributes; i++ )); do
             echo -e "${YELLOW}--- Atributo #${i} ---${NC}"
             
             local attr_name
-            read -p "Nombre del atributo: " attr_name
+            while true; do
+                read -p "Nombre del atributo: " attr_name
+                if [[ -n "$attr_name" ]]; then break; else print_error "El nombre no puede estar vacío."; fi
+            done
 
             # Preguntar por el tipo de dato
             local attr_type
             echo "Elige el tipo de dato para '${attr_name}':"
             select type_option in "string" "number" "boolean" "Date"; do
                 case $type_option in
-                    "string"|"number"|"boolean"|"Date")
+                    "string"|"number"|"boolean"|"Date") 
                         attr_type=$type_option
                         break
                         ;;
                     *) echo "Opción no válida." ;;
                 esac
             done
-
-            # Construir la línea para la interfaz principal
-            interface_body+="  ${attr_name}: ${attr_type};\n"
-
-            # Preguntar si se incluye en la interfaz de respuesta
-            local include_in_response
-            read -p "¿Incluir '${attr_name}' en la interfaz de respuesta (ResponseI)? (s/n): " include_in_response
-            if [[ "$include_in_response" =~ ^[sSyY]$ ]]; then
-                response_interface_body+="  ${attr_name}: ${attr_type};\n"
-            fi
+            
+            # Guardar el atributo como "nombre:tipo"
+            all_attributes+=("${attr_name}:${attr_type}")
         done
 
-        # 4. Preguntar por claves foráneas
+        # --- NUEVA LÓGICA DE EXCLUSIÓN ---
+        local attributes_for_response=("${all_attributes[@]}")
+        local excluded_attributes=()
+
         while true; do
-            read -p "¿El modelo '${model_name}' tiene una clave foránea (foreign key) hacia otro modelo? (s/n): " has_fk
+            echo -e "\n${YELLOW}Los siguientes atributos se incluirán en la interfaz de respuesta (ResponseI):${NC}"
+            # Muestra solo los nombres de los atributos
+            local display_attrs=()
+            for item in "${attributes_for_response[@]}"; do display_attrs+=("$(echo "$item" | cut -d':' -f1)"); done
+            echo "  ${display_attrs[*]}"
+            
+            echo -e "${YELLOW}Selecciona un atributo que desees OCULTAR de la ResponseI (o 'Finalizar'):${NC}"
+            
+            local options=("${display_attrs[@]}" "Finalizar - Generar interfaces")
+
+            select attr_to_exclude_name in "${options[@]}"; do
+                if [[ "$attr_to_exclude_name" == "Finalizar - Generar interfaces" ]]; then
+                    break 2 # Rompe ambos bucles (select y while)
+                elif [ -n "$attr_to_exclude_name" ]; then
+                    # Encontrar el atributo completo ("nombre:tipo") para moverlo
+                    local full_attr_to_exclude=""
+                    for item in "${attributes_for_response[@]}"; do
+                        if [[ "$(echo "$item" | cut -d':' -f1)" == "$attr_to_exclude_name" ]]; then
+                            full_attr_to_exclude="$item"
+                            break
+                        fi
+                    done
+
+                    excluded_attributes+=("$full_attr_to_exclude")
+                    
+                    # Reconstruir la lista de atributos para la respuesta
+                    local temp_attrs=()
+                    for item in "${attributes_for_response[@]}"; do
+                        if [[ "$item" != "$full_attr_to_exclude" ]]; then
+                            temp_attrs+=("$item")
+                        fi
+                    done
+                    attributes_for_response=("${temp_attrs[@]}")
+                    print_info "El atributo '${attr_to_exclude_name}' se ha excluido de ResponseI."
+                    break # Rompe el 'select' y vuelve a mostrar el menú 'while' actualizado
+                else
+                    print_error "Opción no válida. Inténtalo de nuevo."
+                fi
+            done
+        done
+
+        # --- FIN DE LA LÓGICA DE EXCLUSIÓN ---
+
+        # Construir los cuerpos de las interfaces
+        local interface_body=""
+        for attr in "${all_attributes[@]}"; do
+            local attr_name=$(echo "$attr" | cut -d':' -f1)
+            local attr_type=$(echo "$attr" | cut -d':' -f2)
+            interface_body+="  ${attr_name}: ${attr_type};\n"
+        done
+
+        local response_interface_body=""
+        for attr in "${attributes_for_response[@]}"; do
+            local attr_name=$(echo "$attr" | cut -d':' -f1)
+            local attr_type=$(echo "$attr" | cut -d':' -f2)
+            response_interface_body+="  ${attr_name}: ${attr_type};\n"
+        done
+
+        # 4. Preguntar por claves foráneas (se mantiene igual)
+        while true; do
+            read -p "¿El modelo '${model_name}' tiene una clave foránea (foreign key)? (s/n): " has_fk
             if [[ ! "$has_fk" =~ ^[sSyY]$ ]]; then
                 break
             fi
@@ -106,7 +164,7 @@ create_dynamic_models() {
             print_info "Se ha añadido el campo de clave foránea: ${fk_attr_name}: ${fk_attr_type}"
         done
 
-        # 4. Construir el contenido completo del archivo del modelo
+        # 5. Construir el contenido completo del archivo del modelo
         local model_file_content
         model_file_content=$(cat <<EOF
 export interface ${model_name}I {
@@ -117,11 +175,12 @@ ${interface_body}  status: "ACTIVE" | "INACTIVE";
 
 export interface ${model_name}ResponseI {
   id?: number;
-${response_interface_body}}
+${response_interface_body}  status: "ACTIVE" | "INACTIVE";
+}
 EOF
 )
 
-        # 5. Escribir el archivo
+        # 6. Escribir el archivo
         local model_filename="src/app/models/${table_name}.ts"
         echo -e "$model_file_content" > "$model_filename"
         print_success "Modelo creado exitosamente en: $model_filename"
