@@ -1,1 +1,122 @@
-<p>create works!</p>
+<div class="max-w-4xl mx-auto p-6">
+  <div class="bg-white rounded-lg shadow-lg p-8">
+    <h2 class="text-2xl font-bold mb-6 text-gray-800">Crear Nuevo Sale</h2>
+
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="flex flex-col">
+          <label class="block mb-2 font-semibold text-gray-700">Client_id *</label>
+          <input 
+            pInputText 
+            type="text"
+            formControlName="client_id" 
+            class="w-full"
+
+            [class.ng-invalid]="form.get('client_id')?.invalid && form.get('client_id')?.touched"
+          />
+          <small class="text-red-500 mt-1" *ngIf="getFieldError('client_id')">
+            {{ getFieldError('client_id') }}
+          </small>
+        </div>        <div class="flex flex-col">
+          <label class="block mb-2 font-semibold text-gray-700">Discounts *</label>
+          <input 
+            pInputText 
+            type="text"
+            formControlName="discounts" 
+            class="w-full"
+
+            [class.ng-invalid]="form.get('discounts')?.invalid && form.get('discounts')?.touched"
+          />
+          <small class="text-red-500 mt-1" *ngIf="getFieldError('discounts')">
+            {{ getFieldError('discounts') }}
+          </small>
+        </div>        <div class="flex flex-col">
+          <label class="block mb-2 font-semibold text-gray-700">Sale_date *</label>
+          <input 
+            pInputText 
+            type="text"
+            formControlName="sale_date" 
+            class="w-full"
+
+            [class.ng-invalid]="form.get('sale_date')?.invalid && form.get('sale_date')?.touched"
+          />
+          <small class="text-red-500 mt-1" *ngIf="getFieldError('sale_date')">
+            {{ getFieldError('sale_date') }}
+          </small>
+        </div>        <div class="flex flex-col">
+          <label class="block mb-2 font-semibold text-gray-700">Estado *</label>
+          <p-select
+            formControlName="status"
+            [options]="statusOptions"
+            placeholder="Seleccionar estado"
+            class="w-full"
+          ></p-select>
+        </div>        <div class="flex flex-col">
+          <label class="block mb-2 font-semibold text-gray-700">Subtotal *</label>
+          <input 
+            pInputText 
+            type="text"
+            formControlName="subtotal" 
+            class="w-full"
+
+            [class.ng-invalid]="form.get('subtotal')?.invalid && form.get('subtotal')?.touched"
+          />
+          <small class="text-red-500 mt-1" *ngIf="getFieldError('subtotal')">
+            {{ getFieldError('subtotal') }}
+          </small>
+        </div>        <div class="flex flex-col">
+          <label class="block mb-2 font-semibold text-gray-700">Tax *</label>
+          <input 
+            pInputText 
+            type="text"
+            formControlName="tax" 
+            class="w-full"
+
+            [class.ng-invalid]="form.get('tax')?.invalid && form.get('tax')?.touched"
+          />
+          <small class="text-red-500 mt-1" *ngIf="getFieldError('tax')">
+            {{ getFieldError('tax') }}
+          </small>
+        </div>        <div class="flex flex-col">
+          <label class="block mb-2 font-semibold text-gray-700">Total *</label>
+          <input 
+            pInputText 
+            type="text"
+            formControlName="total" 
+            class="w-full"
+
+            [class.ng-invalid]="form.get('total')?.invalid && form.get('total')?.touched"
+          />
+          <small class="text-red-500 mt-1" *ngIf="getFieldError('total')">
+            {{ getFieldError('total') }}
+          </small>
+        </div>
+      </div>
+
+      <div class="flex justify-center mt-8">
+        <div class="bg-gray-50 rounded-lg p-4 flex gap-4 items-center">
+          <button
+            pButton
+            type="submit"
+            class="p-button bg-blue-500 hover:bg-blue-600 text-white"
+            label="Guardar"
+            icon="pi pi-save"
+            [loading]="loading"
+            [disabled]="loading"
+          ></button>
+          <button
+            pButton
+            type="button"
+            class="p-button p-button-secondary"
+            label="Cancelar"
+            icon="pi pi-times"
+            (click)="cancelar()"
+            [disabled]="loading"
+          ></button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<p-toast></p-toast>

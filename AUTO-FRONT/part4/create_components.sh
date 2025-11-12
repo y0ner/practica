@@ -95,9 +95,10 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
-import { DropdownModule } from 'primeng/dropdown'; // Para el campo status
+import { Select } from 'primeng/select';
 import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
 import { CardModule } from 'primeng/card';
@@ -106,7 +107,7 @@ import { ${model_name}Service } from '../../../services/${table_name}.service';
 @Component({
   selector: 'app-create',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, ButtonModule, InputTextModule, DropdownModule, ToastModule, CardModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, ButtonModule, InputTextModule, Select, ToastModule, CardModule, RouterLink],
   templateUrl: './create.html',
   styleUrl: './create.css',
   providers: [MessageService]
@@ -222,12 +223,12 @@ EOF
                 html_form_fields+=$(cat <<EOT
         <div class="flex flex-col">
           <label class="block mb-2 font-semibold text-gray-700">Estado *</label>
-          <p-dropdown
+          <p-select
             formControlName="status"
             [options]="statusOptions"
             placeholder="Seleccionar estado"
             class="w-full"
-          ></p-dropdown>
+          ></p-select>
         </div>
 EOT
 )

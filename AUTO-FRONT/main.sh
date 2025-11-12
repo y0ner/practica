@@ -7,13 +7,22 @@
 # estén disponibles en el scope de este script principal.
 
 echo "Cargando part1_setup.sh..."
-source ./part1_setup.sh
-echo "Cargando part2_crud.sh..."
-source ./part2_rutas.sh
+source ./part1_setup.sh || { echo "Error cargando part1_setup.sh"; exit 1; }
+
 echo "Cargando part3_auth.sh..."
-source ./part3_auth.sh
-echo "Cargando part4_client_crud.sh..."
-source ./part4_crud.sh
+source ./part3_auth.sh || { echo "Error cargando part3_auth.sh"; exit 1; }
+
+echo "Cargando scripts de la Parte 4..."
+source ./part4/models.sh || { echo "Error cargando part4/models.sh"; exit 1; }
+source ./part4/services.sh || { echo "Error cargando part4/services.sh"; exit 1; }
+source ./part4/components.sh || { echo "Error cargando part4/components.sh"; exit 1; }
+source ./part4/html.sh || { echo "Error cargando part4/html.sh"; exit 1; }
+source ./part4/create_components.sh || { echo "Error cargando part4/create_components.sh"; exit 1; } # <-- AQUÍ ESTÁ LA CORRECCIÓN
+source ./part4/update_components.sh || { echo "Error cargando part4/update_components.sh"; exit 1; }
+source ./part4/delete_components.sh || { echo "Error cargando part4/delete_components.sh"; exit 1; }
+source ./part4/design_improvements.sh || { echo "Error cargando part4/design_improvements.sh"; exit 1; }
+source ./part4/routing.sh || { echo "Error cargando part4/routing.sh"; exit 1; }
+source ./part4/menu.sh || { echo "Error cargando part4/menu.sh"; exit 1; }
 
 main_menu() {
     while true; do

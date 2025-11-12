@@ -76,14 +76,14 @@ EOF
     cat << EOF > src/app/components/layout/aside/aside.ts
 import { Component, OnInit } from '@angular/core';
 import { MenuItem } from 'primeng/api';
-import { PanelMenuModule } from 'primeng/panelmenu';
+import { PanelMenu } from 'primeng/panelmenu';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-aside',
   standalone: true,
-  imports: [CommonModule, PanelMenuModule, RouterLink],
+  imports: [CommonModule, PanelMenu],
   templateUrl: './aside.html',
   styleUrl: './aside.css'
 })

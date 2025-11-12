@@ -1,1 +1,23 @@
-<p>update works!</p>
+<div class="max-w-4xl mx-auto p-6">
+  <div class="bg-white rounded-lg shadow-lg p-8">
+    <h2 class="text-2xl font-bold mb-6 text-gray-800">Editar Sale</h2>
+
+    <div class="flex justify-center py-8" *ngIf="loading">
+      <i class="pi pi-spin pi-spinner" style="font-size: 2.5rem"></i>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="submit()" *ngIf="!loading">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="flex flex-col"><label class="block mb-2 font-semibold text-gray-700">Client_id *</label><input pInputText type="text" formControlName="client_id" class="w-full" placeholder=""/><small class="text-red-500 mt-1" *ngIf="getFieldError('client_id')">{{ getFieldError('client_id') }}</small></div>        <div class="flex flex-col"><label class="block mb-2 font-semibold text-gray-700">Discounts *</label><input pInputText type="text" formControlName="discounts" class="w-full" placeholder=""/><small class="text-red-500 mt-1" *ngIf="getFieldError('discounts')">{{ getFieldError('discounts') }}</small></div>        <div class="flex flex-col"><label class="block mb-2 font-semibold text-gray-700">Sale_date *</label><input pInputText type="text" formControlName="sale_date" class="w-full" placeholder=""/><small class="text-red-500 mt-1" *ngIf="getFieldError('sale_date')">{{ getFieldError('sale_date') }}</small></div>        <div class="flex flex-col"><label class="block mb-2 font-semibold text-gray-700">Subtotal *</label><input pInputText type="text" formControlName="subtotal" class="w-full" placeholder=""/><small class="text-red-500 mt-1" *ngIf="getFieldError('subtotal')">{{ getFieldError('subtotal') }}</small></div>        <div class="flex flex-col"><label class="block mb-2 font-semibold text-gray-700">Tax *</label><input pInputText type="text" formControlName="tax" class="w-full" placeholder=""/><small class="text-red-500 mt-1" *ngIf="getFieldError('tax')">{{ getFieldError('tax') }}</small></div>        <div class="flex flex-col"><label class="block mb-2 font-semibold text-gray-700">Total *</label><input pInputText type="text" formControlName="total" class="w-full" placeholder=""/><small class="text-red-500 mt-1" *ngIf="getFieldError('total')">{{ getFieldError('total') }}</small></div>
+      </div>
+
+      <div class="flex justify-center mt-8">
+        <div class="bg-gray-50 rounded-lg p-4 flex gap-4 items-center">
+          <button pButton type="submit" label="Actualizar" icon="pi pi-save" [loading]="loading" [disabled]="form.invalid || loading"></button>
+          <button pButton type="button" class="p-button-secondary" label="Cancelar" icon="pi pi-times" (click)="cancelar()" [disabled]="loading"></button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+<p-toast></p-toast>

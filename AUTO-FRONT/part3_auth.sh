@@ -139,7 +139,7 @@ EOF
     print_msg "Actualizando app.component.ts para controlar visibilidad del layout"
     cat << 'EOF' > src/app/app.ts
 import { Component, signal } from '@angular/core';
-import { RouterOutlet, RouterLink } from '@angular/router';
+import { RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { Aside } from './components/layout/aside/aside';
 import { Header } from './components/layout/header/header';
@@ -149,7 +149,7 @@ import { AuthService } from './services/auth.service';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, Header, Footer, Aside, CommonModule, RouterLink],
+  imports: [RouterOutlet, Header, Footer, Aside, CommonModule],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
@@ -192,18 +192,18 @@ EOF
     cat << 'EOF' > src/app/components/layout/header/header.ts
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { MenuItem } from 'primeng/api';
 import { OverlayBadge } from 'primeng/overlaybadge';
 import { TieredMenu } from 'primeng/tieredmenu';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../../services/auth.service';
 import { Subscription } from 'rxjs';
-import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule, OverlayBadge, TieredMenu, RouterLink],
+  imports: [CommonModule, OverlayBadge, TieredMenu],
   templateUrl: './header.html',
   styleUrl: './header.css'
 })

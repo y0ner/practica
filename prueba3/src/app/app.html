@@ -1,23 +1,20 @@
-<!-- Layout principal, solo se muestra si el usuario está logueado -->
-<main *ngIf="authService.isLoggedIn()" class="min-h-screen flex flex-col">
-  <header class="h-16 bg-white border-b flex items-center w-full font-bold text-blue-600">
+<!-- El layout (header, aside) solo se muestra si el usuario está autenticado -->
+<ng-container *ngIf="authService.authState$ | async">
+  <header class="h-16 bg-white border-b border-gray-200 flex items-center w-full shadow-sm z-10 fixed top-0 left-0 right-0">
     <app-header class="w-full"></app-header>
   </header>
+  <aside class="w-64 bg-white border-r border-gray-200 shadow-sm fixed top-16 bottom-0 left-0">
+    <app-aside></app-aside>
+  </aside>
+</ng-container>
 
-  <div class="flex flex-1">
-    <aside class="w-64 bg-white border-r flex items-start justify-start font-bold text-blue-400">
-      <app-aside></app-aside>
-    </aside>
-
-    <section class="flex-1 bg-gray-50 p-6">
-      <router-outlet />
-    </section>
+<!-- Contenedor principal para el contenido de la ruta -->
+<!-- Se aplica el margen izquierdo y superior solo si está logueado -->
+<main 
+  class="bg-gray-50 min-h-screen"
+  [class.pl-64]="authService.authState$ | async"
+  [class.pt-16]="authService.authState$ | async">
+  <div class="p-6">
+    <router-outlet></router-outlet>
   </div>
-
-  <footer class="h-16 bg-white border-t flex items-center justify-center font-bold text-blue-600 mt-auto">
-    <app-footer></app-footer>
-  </footer>
 </main>
-
-<!-- Si no está logueado, solo se renderiza el router-outlet (para login/register) -->
-<router-outlet *ngIf="!authService.isLoggedIn()"></router-outlet>

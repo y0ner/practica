@@ -60,9 +60,12 @@ export class ClientService {
     return this.http.post<ClientResponseI>(this.baseUrl, data, { headers: this.getHeaders() })
       .pipe(
         tap(() => this.refresh()),
-        catchError(error => {
-          console.error('Error creating Client:', error);
-          return throwError(() => error);
+        catchError(err => {
+          // Aseguramos que siempre se propague un error con una estructura conocida
+          const error = err.error?.message || err.statusText || 'Error desconocido en el servidor';
+          console.error('Error creating Client:', err);
+          console.error('Mensaje de error propagado:', error);
+          return throwError(() => new Error(error));
         })
       );
   }

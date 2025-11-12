@@ -1,1 +1,23 @@
-<p>update works!</p>
+<div class="max-w-4xl mx-auto p-6">
+  <div class="bg-white rounded-lg shadow-lg p-8">
+    <h2 class="text-2xl font-bold mb-6 text-gray-800">Editar Client</h2>
+
+    <div class="flex justify-center py-8" *ngIf="loading">
+      <i class="pi pi-spin pi-spinner" style="font-size: 2.5rem"></i>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="submit()" *ngIf="!loading">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="flex flex-col"><label class="block mb-2 font-semibold text-gray-700">Address *</label><input pInputText type="text" formControlName="address" class="w-full" placeholder=""/><small class="text-red-500 mt-1" *ngIf="getFieldError('address')">{{ getFieldError('address') }}</small></div>        <div class="flex flex-col"><label class="block mb-2 font-semibold text-gray-700">Email *</label><input pInputText type="email" formControlName="email" class="w-full" placeholder=""/><small class="text-red-500 mt-1" *ngIf="getFieldError('email')">{{ getFieldError('email') }}</small></div>        <div class="flex flex-col"><label class="block mb-2 font-semibold text-gray-700">Name *</label><input pInputText type="text" formControlName="name" class="w-full" placeholder=""/><small class="text-red-500 mt-1" *ngIf="getFieldError('name')">{{ getFieldError('name') }}</small></div>        <div class="flex flex-col"><label class="block mb-2 font-semibold text-gray-700">Password *</label><input pInputText type="password" formControlName="password" class="w-full" placeholder="Dejar en blanco para no cambiar"/><small class="text-red-500 mt-1" *ngIf="getFieldError('password')">{{ getFieldError('password') }}</small></div>        <div class="flex flex-col"><label class="block mb-2 font-semibold text-gray-700">Phone *</label><input pInputText type="text" formControlName="phone" class="w-full" placeholder=""/><small class="text-red-500 mt-1" *ngIf="getFieldError('phone')">{{ getFieldError('phone') }}</small></div>
+      </div>
+
+      <div class="flex justify-center mt-8">
+        <div class="bg-gray-50 rounded-lg p-4 flex gap-4 items-center">
+          <button pButton type="submit" label="Actualizar" icon="pi pi-save" [loading]="loading" [disabled]="form.invalid || loading"></button>
+          <button pButton type="button" class="p-button-secondary" label="Cancelar" icon="pi pi-times" (click)="cancelar()" [disabled]="loading"></button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+<p-toast></p-toast>
