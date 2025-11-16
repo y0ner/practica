@@ -8,7 +8,6 @@
 MAIN_SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." &>/dev/null && pwd)
 . "$MAIN_SCRIPT_DIR/scripts/utils.sh"
 
-# --- Funciones para capitalizar y pluralizar ---
 capitalize() {
     echo "$(tr '[:lower:]' '[:upper:]' <<< ${1:0:1})${1:1}"
 }
@@ -35,7 +34,6 @@ fi
 
 mkdir -p "$CONTROLLER_DIR"
 
-# Encuentra todos los archivos de modelo en el directorio raíz de models (ignora subdirectorios como 'authorization')
 MODEL_FILES=$(find "$MODEL_DIR" -maxdepth 1 -type f -name "*.ts")
 
 for model_file in $MODEL_FILES; do
@@ -43,18 +41,68 @@ for model_file in $MODEL_FILES; do
 
     echo -e "${YELLOW}Generando controlador para el modelo: $ModelName...${NC}"
 
-    # Derivados del nombre
     modelName=$(tr '[:upper:]' '[:lower:]' <<< "$ModelName")
     modelNames=$(pluralize "$modelName")
 
-    # Extraer la lista de atributos de la interfaz del modelo
-    AttributeList=$(awk '/export interface .*I {/,/}/ {if (!/export|{|}|id|status/) {gsub(/:.*/, ""); print $1}}' "$model_file" | tr '\n' ',' | sed 's/,$//')
+    raw_attrs=$(
+  awk '
+    /export interface .*I {/,/}/ {
+      # saltar líneas de apertura/cierre
+      if ($0 ~ /export|{|}/) next
+      # trim espacios
+      gsub(/^[ \t]+|[ \t]+$/,"")
+      if (length($0) == 0) next
+      # sacar el nombre antes de ":" y quitar ? o ;
+      name = $1
+      sub(/:.*/,"",name)
+      gsub(/[?;]/,"",name)
+      # ignorar si el nombre EXACTO es "id" o "status"
+      if (name == "id" || name == "status") next
+      print name
+    }
+  ' "$model_file" | tr '\n' ',' | sed 's/,$//'
+)
 
-    # Lista completa para desestructurar req.body
-    FullAttributeList="id,${AttributeList},status"
+    if [ -z "$raw_attrs" ]; then
+      AttributeList=""
+    else
+      IFS=',' read -r -a _attrs_array <<< "$raw_attrs"
 
-    # Plantilla del controlador
-    read -r -d '' CONTROLLER_TEMPLATE <<EOF
+      parent_attrs=()
+      other_attrs=()
+
+      for _a in "${_attrs_array[@]}"; do
+        _a_trim=$(echo "$_a" | tr -d '[:space:]')
+        if [[ -z "$_a_trim" ]]; then continue; fi
+        if [[ "$_a_trim" == *_id ]]; then
+          parent_attrs+=("$_a_trim")
+        else
+          other_attrs+=("$_a_trim")
+        fi
+      done
+
+      combined=""
+      if [ ${#parent_attrs[@]} -gt 0 ]; then
+        combined="$(IFS=, ; echo "${parent_attrs[*]}")"
+      fi
+      if [ ${#other_attrs[@]} -gt 0 ]; then
+        if [ -n "$combined" ]; then
+          combined="${combined},$(IFS=, ; echo "${other_attrs[*]}")"
+        else
+          combined="$(IFS=, ; echo "${other_attrs[*]}")"
+        fi
+      fi
+
+      AttributeList="$combined"
+    fi
+
+    if [ -n "$AttributeList" ]; then
+      FullAttributeList="id,${AttributeList},status"
+    else
+      FullAttributeList="id,status"
+    fi
+
+    ControllerContent=$(cat <<'EOF'
 import { Request, Response } from "express";
 import { __ModelName__, __ModelName__I } from "../models/__ModelName__";
 
@@ -74,7 +122,7 @@ export class __ModelName__Controller {
       const { id: pk } = req.params;
       const __modelName__ = await __ModelName__.findOne({ where: { id: pk, status: 'ACTIVE' } });
       if (__modelName__) {
-        res.status(200).json({__modelName__});
+        res.status(200).json(__modelName__);
       } else {
         res.status(404).json({ error: "__ModelName__ not found or inactive" });
       }
@@ -87,7 +135,7 @@ export class __ModelName__Controller {
     const { __FullAttributeList__ } = req.body;
     try {
       let body: __ModelName__I = { __AttributeList__, status };
-      const new__ModelName__ = await __ModelName__.create({ ...body });
+      const new__ModelName__ = await __ModelName__.create(body as any);
       res.status(201).json(new__ModelName__);
     } catch (error: any) {
       res.status(400).json({ error: error.message });
@@ -95,14 +143,13 @@ export class __ModelName__Controller {
   }
 
   public async update__ModelName__(req: Request, res: Response) {
-    const { id: pk } = req.params;
-    const { __FullAttributeList__ } = req.body;
-    try {
-      let body: __ModelName__I = { __AttributeList__, status };
-      const __modelName__Exist = await __ModelName__.findOne({ where: { id: pk, status: 'ACTIVE' } });
-
+  const { id: pk } = req.params;
+  const { __FullAttributeList__ } = req.body;
+  try {
+    const __modelName__Exist = await __ModelName__.findOne({ where: { id: pk, status: 'ACTIVE' } });
+    let body: __ModelName__I = { __AttributeList__, status };
       if (__modelName__Exist) {
-        await __modelName__Exist.update(body, { where: { id: pk } });
+        await __modelName__Exist.update(body);
         res.status(200).json(__modelName__Exist);
       } else {
         res.status(404).json({ error: "__ModelName__ not found or inactive" });
@@ -128,9 +175,20 @@ export class __ModelName__Controller {
   }
 }
 EOF
+)
 
-    # Reemplazar placeholders y guardar el archivo
-    ControllerContent=$(echo "$CONTROLLER_TEMPLATE" | sed "s/__FullAttributeList__/$FullAttributeList/g" | sed "s/__AttributeList__/$AttributeList/g" | sed "s/getAll__ModelName__s/getAll${ModelName}s/g" | sed "s/get__ModelName__ById/get${ModelName}ById/g" | sed "s/create__ModelName__/create${ModelName}/g" | sed "s/update__ModelName__/update${ModelName}/g" | sed "s/delete__ModelName__Adv/delete${ModelName}Adv/g" | sed "s/__ModelName__/$ModelName/g" | sed "s/__modelName__/$modelName/g" | sed "s/__modelNames__/$modelNames/g")
+    ControllerContent=$(echo "$ControllerContent" \
+      | sed "s/__FullAttributeList__/$FullAttributeList/g" \
+      | sed "s/__AttributeList__/$AttributeList/g" \
+      | sed "s/getAll__ModelName__s/getAll${ModelName}s/g" \
+      | sed "s/get__ModelName__ById/get${ModelName}ById/g" \
+      | sed "s/create__ModelName__/create${ModelName}/g" \
+      | sed "s/update__ModelName__/update${ModelName}/g" \
+      | sed "s/delete__ModelName__Adv/delete${ModelName}Adv/g" \
+      | sed "s/__ModelName__/$ModelName/g" \
+      | sed "s/__modelName__/$modelName/g" \
+      | sed "s/__modelNames__/$modelNames/g")
+
     echo "$ControllerContent" > "${CONTROLLER_DIR}/${ModelName}.Controller.ts"
 done
 
