@@ -48,11 +48,10 @@ while true; do
   echo -e "16. Crear modelos de proyecto (Interactivo)"
   echo -e "17. Copiar controladores de autorización"
   echo -e "18. Crear controladores de proyecto"
-  echo -e "19. --Ahora debes copiar y pegar src/routes/authorization (manualmente)"
-  echo -e "20. --Ahora debes haces las rutas de el proyecto (manualmente)"
-  echo -e "21. Crear src/routes/index.ts (cambia las lineas de errores por los correctos)"
-  echo -e "22. Actualizar src/config/index.ts con rutas"
-  echo -e "23. --Instalar la extension Rest Client (manualmente)"
+  echo -e "19. Copiar rutas de autorización"
+  echo -e "20. Crear rutas de proyecto"
+  echo -e "21. Actualizar config y rutas de índice"
+  echo -e "22. --Instalar la extension Rest Client (manualmente)"
   echo -e "24. --Ahora debes copiar y pegar src/http/authorization/ (manualmente)"
   echo -e "25. --Ahora debes hacer los http de tu project (manualmente)"
   echo -e "26. Instalar faker y crear script de población de datos"
@@ -102,9 +101,10 @@ while true; do
     16) "$SCRIPT_DIR/scripts/16_create_models_interactive.sh" ;;
     17) "$SCRIPT_DIR/scripts/17_copy_auth_controllers.sh" ;;
     18) "$SCRIPT_DIR/scripts/18_create_controllers.sh" ;;
-    21) "$SCRIPT_DIR/scripts/21_create_routes_index.sh" ;;
-    22) "$SCRIPT_DIR/scripts/22_update_config_with_routes.sh" ;;
-    27) "$SCRIPT_DIR/scripts/27_update_config_final.sh" ;;
+    19) "$SCRIPT_DIR/scripts/19_copy_auth_routes.sh" ;;
+    20) "$SCRIPT_DIR/scripts/20_create_routes.sh" ;;
+    21) "$SCRIPT_DIR/scripts/21_update_config_with_routes.sh" ;;
+    27) "$SCRIPT_DIR/scripts/27_update_config_final.sh" ;; # Mantengo el 27 por ahora
     26) "$SCRIPT_DIR/scripts/26_install_faker_and_populate.sh" ;;
     28) "$SCRIPT_DIR/scripts/28_create_auth_middleware.sh" ;;
     0) echo "Saliendo..."; exit 0 ;;
