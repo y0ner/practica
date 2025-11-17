@@ -6,25 +6,19 @@
 # Es importante usar "source" o "." para que las funciones y variables
 # estén disponibles en el scope de este script principal.
 
-echo "Cargando part1_setup.sh..."
-source ./part1_setup.sh || { echo "Error cargando part1_setup.sh"; exit 1; }
-
-echo "Cargando part3_auth.sh..."
-source ./part3_auth.sh || { echo "Error cargando part3_auth.sh"; exit 1; }
-
-echo "Cargando scripts de la Parte 4..."
-source ./part4/models.sh || { echo "Error cargando part4/models.sh"; exit 1; }
-source ./part4/services.sh || { echo "Error cargando part4/services.sh"; exit 1; }
-source ./part4/components.sh || { echo "Error cargando part4/components.sh"; exit 1; }
-source ./part4/html.sh || { echo "Error cargando part4/html.sh"; exit 1; }
-source ./part4/create_components.sh || { echo "Error cargando part4/create_components.sh"; exit 1; } # <-- AQUÍ ESTÁ LA CORRECCIÓN
-source ./part4/update_components.sh || { echo "Error cargando part4/update_components.sh"; exit 1; }
-source ./part4/delete_components.sh || { echo "Error cargando part4/delete_components.sh"; exit 1; }
-source ./part4/design_improvements.sh || { echo "Error cargando part4/design_improvements.sh"; exit 1; }
-source ./part4/routing.sh || { echo "Error cargando part4/routing.sh"; exit 1; }
-source ./part4/menu.sh || { echo "Error cargando part4/menu.sh"; exit 1; }
+echo "Cargando Parte 1: Gestión de Proyectos..."
+source ./part1.sh || { echo "Error cargando part1.sh"; exit 1; }
+echo "Cargando Parte 2: Configuración Básica..."
+source ./part2.sh || { echo "Error cargando part2.sh"; exit 1; }
+echo "Cargando Parte 3: APIs y Rutas..."
+source ./part3.sh || { echo "Error cargando part3.sh"; exit 1; }
+echo "Cargando Parte 4: Autenticación..."
+source ./part4.sh || { echo "Error cargando part4.sh"; exit 1; }
+echo "Cargando Parte 5: Lógica CRUD..."
+source ./part5.sh || { echo "Error cargando part5.sh"; exit 1; }
 
 main_menu() {
+    local last_choice=""
     while true; do
         
         echo -e "\n${BLUE}========== MENÚ DE AUTOMATIZACIÓN ==========${NC}"
@@ -33,25 +27,30 @@ main_menu() {
         if [ -n "$PROJECT_NAME" ]; then
             echo -e "Proyecto activo: ${GREEN}$PROJECT_NAME${NC}"
         fi
+        if [ -n "$last_choice" ]; then
+            echo -e "Última sección completada: ${GREEN}${last_choice}${NC}"
+        fi
         echo ""
-        echo "1. Seleccionar un proyecto existente"
-        echo "2. Parte Básica con PrimeNG (Crear y configurar proyecto)"
-        echo "3. Generar APIs y Rutas (Frontend)"
-        echo "4. Implementar Autenticación y Autorización"
-        echo "5. Generar Modelos y Servicios CRUD"
-        echo "6. Iniciar servidor de desarrollo"
-        echo "7. Salir"
+        echo "1. Seleccionar proyecto existente"
+        echo "2. Crear nuevo proyecto Angular"
+        echo "3. Parte 2: Configuración Básica (PrimeNG, Tailwind, etc.)"
+        echo "4. Parte 3: Generar APIs y Rutas (Frontend)"
+        echo "5. Parte 4: Implementar Autenticación y Autorización"
+        echo "6. Parte 5: Generar Lógica y Componentes CRUD"
+        echo "7. Iniciar servidor de desarrollo"
+        echo "8. Salir"
         read -p "Elige una sección: " choice
 
         case $choice in
-            1) select_existing_project; press_enter_to_continue ;;
-            2) show_part1_menu; press_enter_to_continue ;;
-            3) create_crud_apis; press_enter_to_continue ;;
-            4) setup_authentication; press_enter_to_continue ;;
-            5) show_part4_menu; press_enter_to_continue ;;
-            6) start_server ;;
-            7) echo "Saliendo..."; exit 0 ;;
-            *) print_error "Opción no válida." ;;
+            1) select_existing_project; last_choice="1"; press_enter_to_continue ;;
+            2) create_angular_project; last_choice="2"; show_part1_menu; press_enter_to_continue ;;
+            3) show_part1_menu; last_choice="3"; press_enter_to_continue ;;
+            4) create_crud_apis; last_choice="4"; press_enter_to_continue ;;
+            5) setup_authentication; last_choice="5"; press_enter_to_continue ;;
+            6) show_part4_menu; last_choice="6"; press_enter_to_continue ;;
+            7) start_server; last_choice="7" ;;
+            8) echo "Saliendo..."; exit 0 ;;
+            *) print_error "Opción no válida."; press_enter_to_continue ;;
         esac
     done
 }
