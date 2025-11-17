@@ -53,16 +53,40 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
 export const validateAuthorization = async (userId: number, resourcePath: string, resourceMethod: string): Promise<boolean> => {
   try {
     // Obtener todos los recursos activos que coincidan con el método
-    const resources = await Resource.findAll({ where: { method: resourceMethod, is_active: "ACTIVE" } });
+    const resources = await Resource.findAll({
+      where: { method: resourceMethod, is_active: "ACTIVE" },
+    });
 
     // Convertir las rutas dinámicas a expresiones regulares y buscar coincidencias
-    const matchingResource = resources.find((resource) => pathToRegexp(resource.path).test(resourcePath));
+    const matchingResource = resources.find((resource) => {
+      const regex = pathToRegexp(resource.path).regexp.test(resourcePath);
+      return regex;
+    });
 
-    if (!matchingResource) { return false; }
+    if (!matchingResource) {
+      return false; // No hay coincidencias para la ruta y el método
+    }
 
     // Verificar si existe una relación válida entre el usuario, su rol y el recurso solicitado
-    const resourceRole = await ResourceRole.findOne({ include: [{ model: Role, include: [{ model: RoleUser, where: { user_id: userId, is_active: "ACTIVE" } }], where: { is_active: "ACTIVE" } }], where: { resource_id: matchingResource.id, is_active: "ACTIVE" } });
+    const resourceRole = await ResourceRole.findOne({
+      include: [
+        {
+          model: Role,
+          include: [
+            {
+              model: RoleUser,
+              where: { user_id: userId, is_active: "ACTIVE" }, // Validar que el usuario esté asociado al rol
+            },
+          ],
+          where: { is_active: "ACTIVE" }, // Validar que el rol esté activo
+        },
+      ],
+      where: { resource_id: matchingResource.id, is_active: "ACTIVE" }, // Validar que la relación resource_role esté activa
+    });
 
     return !!resourceRole; // Retorna true si se encuentra un registro coincidente
-  } catch (error) { console.error('Error al validar la autorización:', error); return false; }
+  } catch (error) {
+    console.error('Error al validar la autorización:', error);
+    return false;
+  }
 };

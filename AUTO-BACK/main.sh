@@ -49,14 +49,13 @@ while true; do
   echo -e "17. Copiar controladores de autorización"
   echo -e "18. Crear controladores de proyecto"
   echo -e "19. Copiar rutas de autorización"
-  echo -e "20. Crear rutas de proyecto"
-  echo -e "21. Actualizar config y rutas de índice"
-  echo -e "22. --Instalar la extension Rest Client (manualmente)"
-  echo -e "24. --Ahora debes copiar y pegar src/http/authorization/ (manualmente)"
-  echo -e "25. --Ahora debes hacer los http de tu project (manualmente)"
+  echo -e "20. crear Auth Middleware"
+  echo -e "21. Crear rutas de proyecto "
+  echo -e "22. Crear src/routes/index.ts"
+  echo -e "23. Actualizar src/config/index.ts (con rutas de proyecto)"
+  echo -e "24. Copiar archivos .http de autorización"
+  echo -e "25. Crear archivos .http para las rutas del proyecto"
   echo -e "26. Instalar faker y crear script de población de datos"
-  echo -e "27. Actualizar src/config/index.ts (final)"
-  echo -e "28. Crear middleware de autenticación (auth.ts)"
   echo -e "0. Salir"
   echo -e "${YELLOW}==============================================${NC}"
   echo -e "${CYAN}Última opción utilizada: ${last_option_used}${NC}"
@@ -102,11 +101,13 @@ while true; do
     17) "$SCRIPT_DIR/scripts/17_copy_auth_controllers.sh" ;;
     18) "$SCRIPT_DIR/scripts/18_create_controllers.sh" ;;
     19) "$SCRIPT_DIR/scripts/19_copy_auth_routes.sh" ;;
-    20) "$SCRIPT_DIR/scripts/20_create_routes.sh" ;;
-    21) "$SCRIPT_DIR/scripts/21_update_config_with_routes.sh" ;;
-    27) "$SCRIPT_DIR/scripts/27_update_config_final.sh" ;; # Mantengo el 27 por ahora
+    20) "$SCRIPT_DIR/scripts/20_create_auth_middleware.sh" ;;
+    21) "$SCRIPT_DIR/scripts/21_create_routes.sh" ;;
+    22) "$SCRIPT_DIR/scripts/22_create_index_routes.sh"; pause ;;
+    23) "$SCRIPT_DIR/scripts/23_update_config_index.sh" ;;
+    24) "$SCRIPT_DIR/scripts/24_copy_auth_http.sh" ;;
+    25) "$SCRIPT_DIR/scripts/25_create_project_http.sh" ;;
     26) "$SCRIPT_DIR/scripts/26_install_faker_and_populate.sh" ;;
-    28) "$SCRIPT_DIR/scripts/28_create_auth_middleware.sh" ;;
     0) echo "Saliendo..."; exit 0 ;;
     *) echo "Opción inválida."; pause ;;
   esac

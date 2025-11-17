@@ -41,6 +41,15 @@ for model_file in $MODEL_FILES; do
     ModelName=$(basename "$model_file" .ts)
 
     echo -e "${YELLOW}Generando rutas para el modelo: $ModelName...${NC}"
+	
+	# Convertir el nombre del modelo a PascalCase sin puntos
+	PascalCaseModelName=""
+	IFS='.'
+	for part in $ModelName; do
+		PascalCaseModelName+="$(tr '[:lower:]' '[:upper:]' <<< ${part:0:1})${part:1}"
+	done
+	unset IFS
+
 
     modelName=$(tr '[:upper:]' '[:lower:]' <<< "$ModelName")
     ModelNames=$(pluralize "$ModelName")
@@ -48,7 +57,7 @@ for model_file in $MODEL_FILES; do
     RouteFileContent=$(cat <<EOF
 import { Application } from "express";
 import { ${ModelName}Controller } from "../controllers/${ModelName}.Controller";
-import { authMiddleware } from "../middleware/auth.middleware";
+import { authMiddleware } from "../middleware/auth";
 
 export class ${ModelName}Routes {
   public ${modelName}Controller: ${ModelName}Controller = new ${ModelName}Controller();
@@ -79,7 +88,7 @@ EOF
     # He generado las rutas privadas por defecto y he dejado las públicas como un ejemplo comentado
     # para que puedas descomentarlas si las necesitas. Esto evita la duplicidad.
     # También he omitido el ".delete" simple ya que el controlador genera un borrado lógico ".deleteAdv".
-
+	
     echo "$RouteFileContent" > "${ROUTES_DIR}/${ModelName}.Routes.ts"
 done
 

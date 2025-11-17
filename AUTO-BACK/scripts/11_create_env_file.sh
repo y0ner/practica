@@ -19,7 +19,7 @@ DB_ENGINE=mysql
 MYSQL_HOST=localhost
 MYSQL_USER=yoner
 MYSQL_PASSWORD=yoner
-MYSQL_NAME=desarrollo_web
+MYSQL_NAME=prueba
 MYSQL_PORT=3306
 DB_TIMEZONE=America/Bogota
 
