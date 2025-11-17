@@ -29,9 +29,14 @@ create_dynamic_models() {
         print_step "Configurando modelo para la tabla: '$table_name'"
 
         # 1. Preguntar por el nombre del modelo en singular y capitalizado
+        # Sugerencia inteligente: capitalizar el nombre de la tabla como valor por defecto.
+        local suggested_model_name="$(echo "${table_name:0:1}" | tr '[:lower:]' '[:upper:]')${table_name:1}"
         local model_name
         while true; do
-            read -p "Introduce el nombre para el modelo en singular y capitalizado (ej. Client, Product): " model_name
+            read -p "Introduce el nombre para el modelo (singular, capitalizado) [${suggested_model_name}]: " model_name
+            # Si el usuario solo presiona Enter, usa la sugerencia.
+            [ -z "$model_name" ] && model_name=$suggested_model_name
+
             if [[ "$model_name" =~ ^[A-Z][a-zA-Z0-9]*$ ]]; then
                 break
             else
@@ -188,7 +193,6 @@ EOF
 
     print_success "Todos los modelos han sido creados."
 
-    # Volvemos al directorio original del script
-    local script_dir; script_dir=$(dirname "$(realpath "$0")")
-    cd "$script_dir" || return
+    # Volvemos al directorio desde donde se llamó al script
+    cd - > /dev/null
 }

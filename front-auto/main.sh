@@ -6,6 +6,10 @@
 # Es importante usar "source" o "." para que las funciones y variables
 # estén disponibles en el scope de este script principal.
 
+echo "Cargando Utilidades Comunes..."
+source ./part1/utils.sh || { echo "Error cargando part1/utils.sh"; exit 1; }
+
+
 echo "Cargando Parte 1: Gestión de Proyectos..."
 source ./part1.sh || { echo "Error cargando part1.sh"; exit 1; }
 echo "Cargando Parte 2: Configuración Básica..."

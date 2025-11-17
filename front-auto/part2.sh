@@ -12,7 +12,6 @@ SCRIPT_DIR=$(dirname "$(realpath "$0")")
 # Se cargan los scripts en un orden lógico para asegurar que las dependencias
 # (como las funciones de utilidad) estén disponibles cuando se necesiten.
 
-source "$SCRIPT_DIR/part1/utils.sh"
 source "$SCRIPT_DIR/part1/install.sh"
 source "$SCRIPT_DIR/part1/layout.sh"
 source "$SCRIPT_DIR/part1/menu.sh"

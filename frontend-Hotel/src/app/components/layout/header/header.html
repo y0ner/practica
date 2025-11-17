@@ -1,0 +1,11 @@
+<div class="w-full flex justify-end items-center gap-2 px-4">
+    <button *ngIf="isLoggedIn" type="button" class="text-orange-500 bg-gray-100 hover:bg-gray-200 rounded-full shadow hover:shadow-lg flex items-center justify-center w-10 h-10">
+        <p-overlaybadge value="2">
+            <i class="pi pi-bell text-xl"></i>
+        </p-overlaybadge>
+    </button>
+    <button type="button" class="text-orange-500 bg-gray-100 hover:bg-gray-200 rounded-full shadow hover:shadow-lg w-10 h-10 flex items-center justify-center" (click)="menu.toggle($event)">
+        <i class="pi pi-user text-xl"></i>
+    </button>
+</div>
+<p-tieredmenu #menu [model]="items" [popup]="true" />

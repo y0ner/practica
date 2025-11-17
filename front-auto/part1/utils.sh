@@ -16,6 +16,15 @@ print_success() {
     echo -e "${GREEN}ÉXITO:${NC} $1"
 }
 
+print_warning() {
+    echo -e "${YELLOW}AVISO:${NC} $1"
+}
+
+# Alias para print_msg, para mantener la consistencia si se usa en otros scripts.
+print_info() {
+    print_msg "$1"
+}
+
 print_error() {
     echo -e "${RED}ERROR:${NC} $1"
 }

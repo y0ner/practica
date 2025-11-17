@@ -1,0 +1,19 @@
+<div class="min-h-screen flex items-center justify-center bg-gray-50">
+  <div class="max-w-md w-full p-4">
+    <p-card header="Registrar Usuario" class="shadow-lg">
+      <form [formGroup]="form" (ngSubmit)="submit()" class="space-y-6">
+        
+        <div class="flex flex-col"><label for="username" class="block mb-2 font-semibold text-gray-700">Username *</label><input pInputText id="username" type="text" formControlName="username" class="w-full" /><small class="text-red-500 mt-1" *ngIf="form.get('username')?.invalid && form.get('username')?.touched">Username es requerido</small></div>
+        <div class="flex flex-col"><label for="email" class="block mb-2 font-semibold text-gray-700">Email *</label><input pInputText id="email" type="email" formControlName="email" class="w-full" /><small class="text-red-500 mt-1" *ngIf="form.get('email')?.invalid && form.get('email')?.touched">Email no válido</small></div>
+        <div class="flex flex-col"><label for="password" class="block mb-2 font-semibold text-gray-700">Contraseña *</label><input pInputText id="password" type="password" formControlName="password" class="w-full" /><small class="text-red-500 mt-1" *ngIf="form.get('password')?.invalid && form.get('password')?.touched">La contraseña debe tener al menos 6 caracteres</small></div>
+        <div class="flex flex-col"><label for="confirmPassword" class="block mb-2 font-semibold text-gray-700">Confirmar Contraseña *</label><input pInputText id="confirmPassword" type="password" formControlName="confirmPassword" class="w-full" /><small class="text-red-500 mt-1" *ngIf="form.get('confirmPassword')?.hasError('passwordMismatch')">Las contraseñas no coinciden</small></div>
+
+        <div class="flex flex-col space-y-3 mt-6">
+          <button pButton type="submit" class="w-full" label="Registrarse" icon="pi pi-user-plus" [loading]="loading" [disabled]="form.invalid || loading"></button>
+          <a routerLink="/login" class="text-center text-blue-500 hover:underline">¿Ya tienes cuenta? Iniciar Sesión</a>
+        </div>
+      </form>
+    </p-card>
+  </div>
+</div>
+<p-toast></p-toast>
