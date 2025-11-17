@@ -50,23 +50,3 @@ RoomType.init(
     timestamps: false,
   }
 );
-
-RoomType.hasMany(Room, {
-  foreignKey: "roomtype_id",
-  sourceKey: "id",
-});
-Room.belongsTo(RoomType, {
-  foreignKey: "roomtype_id",
-  targetKey: "id",
-});
-
-RoomType.hasMany(Rate, {
-  foreignKey: "roomtype_id",
-  sourceKey: "id",
-});
-Rate.belongsTo(RoomType, {
-  foreignKey: "roomtype_id",
-  targetKey: "id",
-});
-
-

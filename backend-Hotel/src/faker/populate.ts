@@ -12,6 +12,7 @@ import { Payment } from '../models/Payment';
 import { ReservationService } from '../models/ReservationService';
 import { Checkout } from '../models/Checkout';
 import { Checkin } from '../models/Checkin';
+import { setupAssociations } from '../models/associations';
 
 
 // Contenedor para los IDs de los modelos poblados
@@ -19,6 +20,9 @@ const populatedIds: { [key: string]: any[] } = {};
 
 async function main() {
     console.log('Syncing database...');
+    // Configura las asociaciones antes de sincronizar la base de datos
+    setupAssociations();
+
     await sequelize.sync({ force: true }); // ¡CUIDADO! Esto borrará todos los datos existentes.
 
     console.log('Starting data population...');
@@ -203,14 +207,21 @@ async function populatePayments(count: number) {
 async function populateReservationServices(count: number) {
     console.log('Populating ReservationServices...');
     const createdItems = [];
-    for (let i = 0; i < count; i++) {
-        const newItem = await ReservationService.create({
-            quantity: faker.number.int({ min: 1, max: 5 }),
-            reservation_id: faker.helpers.arrayElement(populatedIds['Reservation']).id, // Reservation debe estar poblado antes
-            service_id: faker.helpers.arrayElement(populatedIds['Service']).id, // Service debe estar poblado antes
-            status: 'ACTIVE',
-        });
-        createdItems.push(newItem as any);
+    const reservations = populatedIds['Reservation'];
+    const services = populatedIds['Service'];
+
+    for (const reservation of reservations) {
+        // Asigna un número aleatorio de servicios (entre 1 y 3) a cada reserva
+        const servicesToAssign = faker.helpers.arrayElements(services, { min: 1, max: 3 });
+        for (const service of servicesToAssign) {
+            const newItem = await ReservationService.create({
+                quantity: faker.number.int({ min: 1, max: 5 }),
+                reservation_id: reservation.id,
+                service_id: service.id,
+                status: 'ACTIVE',
+            });
+            createdItems.push(newItem as any);
+        }
     }
     populatedIds['ReservationService'] = createdItems;
 }

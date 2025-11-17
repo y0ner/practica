@@ -49,14 +49,3 @@ Season.init(
     timestamps: false,
   }
 );
-
-Season.hasMany(Rate, {
-  foreignKey: "season_id",
-  sourceKey: "id",
-});
-Rate.belongsTo(Season, {
-  foreignKey: "season_id",
-  targetKey: "id",
-});
-
-

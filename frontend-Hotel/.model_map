@@ -1,0 +1,14 @@
+Hotel:Hotel
+RoomType:TipoHabitacion
+Room:Habitacion
+Season:Temporada
+Rate:Tarifa
+Client:Cliente
+Service:Servicio
+Reservation:Reserva
+Payment:Pago
+
+
+
+
+

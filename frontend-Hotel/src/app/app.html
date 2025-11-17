@@ -8,6 +8,13 @@
   </aside>
 </ng-container>
 
-<main class="bg-gray-50 min-h-screen" [class.pl-64]="authService.authState$ | async" [class.pt-16]="authService.authState$ | async">
-  <div class="p-6"> <router-outlet></router-outlet> </div>
+<!-- Contenedor principal para el contenido de la ruta -->
+<!-- Se aplica el margen izquierdo y superior solo si está logueado -->
+<main 
+  class="bg-gray-50 min-h-screen"
+  [class.pl-64]="authService.authState$ | async"
+  [class.pt-16]="authService.authState$ | async">
+  <div class="p-6">
+    <router-outlet></router-outlet>
+  </div>
 </main>

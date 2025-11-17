@@ -49,6 +49,3 @@ Service.init(
     timestamps: false,
   }
 );
-
-Service.belongsToMany(Reservation, { through: "ReservationService" });
-

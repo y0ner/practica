@@ -61,14 +61,3 @@ Client.init(
     timestamps: false,
   }
 );
-
-Client.hasMany(Reservation, {
-  foreignKey: "client_id",
-  sourceKey: "id",
-});
-Reservation.belongsTo(Client, {
-  foreignKey: "client_id",
-  targetKey: "id",
-});
-
-

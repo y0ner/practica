@@ -61,14 +61,3 @@ Hotel.init(
     timestamps: false,
   }
 );
-
-Hotel.hasMany(Room, {
-  foreignKey: "hotel_id",
-  sourceKey: "id",
-});
-Room.belongsTo(Hotel, {
-  foreignKey: "hotel_id",
-  targetKey: "id",
-});
-
-

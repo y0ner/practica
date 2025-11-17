@@ -72,33 +72,3 @@ Reservation.init(
     timestamps: false,
   }
 );
-
-Reservation.hasMany(Checkin, {
-  foreignKey: "reservation_id",
-  sourceKey: "id",
-});
-Checkin.belongsTo(Reservation, {
-  foreignKey: "reservation_id",
-  targetKey: "id",
-});
-
-Reservation.belongsToMany(Service, { through: "ReservationService" });
-Reservation.hasMany(Payment, {
-  foreignKey: "reservation_id",
-  sourceKey: "id",
-});
-Payment.belongsTo(Reservation, {
-  foreignKey: "reservation_id",
-  targetKey: "id",
-});
-
-Reservation.hasMany(Checkout, {
-  foreignKey: "reservation_id",
-  sourceKey: "id",
-});
-Checkout.belongsTo(Reservation, {
-  foreignKey: "reservation_id",
-  targetKey: "id",
-});
-
-
