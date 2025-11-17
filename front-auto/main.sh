@@ -32,24 +32,22 @@ main_menu() {
         fi
         echo ""
         echo "1. Seleccionar proyecto existente"
-        echo "2. Crear nuevo proyecto Angular"
-        echo "3. Parte 2: Configuración Básica (PrimeNG, Tailwind, etc.)"
-        echo "4. Parte 3: Generar APIs y Rutas (Frontend)"
-        echo "5. Parte 4: Implementar Autenticación y Autorización"
-        echo "6. Parte 5: Generar Lógica y Componentes CRUD"
-        echo "7. Iniciar servidor de desarrollo"
-        echo "8. Salir"
+        echo "2. Parte 2: Configuración Básica (PrimeNG, Tailwind, etc.)"
+        echo "3. Parte 3: Generar APIs y Rutas (Frontend)"
+        echo "4. Parte 4: Implementar Autenticación y Autorización"
+        echo "5. Parte 5: Generar Lógica y Componentes CRUD"
+        echo "6. Iniciar servidor de desarrollo"
+        echo "7. Salir"
         read -p "Elige una sección: " choice
 
         case $choice in
             1) select_existing_project; last_choice="1"; press_enter_to_continue ;;
-            2) create_angular_project; last_choice="2"; show_part1_menu; press_enter_to_continue ;;
-            3) show_part1_menu; last_choice="3"; press_enter_to_continue ;;
-            4) create_crud_apis; last_choice="4"; press_enter_to_continue ;;
-            5) setup_authentication; last_choice="5"; press_enter_to_continue ;;
-            6) show_part4_menu; last_choice="6"; press_enter_to_continue ;;
-            7) start_server; last_choice="7" ;;
-            8) echo "Saliendo..."; exit 0 ;;
+            2) show_part1_menu; last_choice="2"; press_enter_to_continue ;;
+            3) create_crud_apis; last_choice="3"; press_enter_to_continue ;;
+            4) setup_authentication; last_choice="4"; press_enter_to_continue ;;
+            5) show_part4_menu; last_choice="5"; press_enter_to_continue ;;
+            6) start_server; last_choice="6" ;;
+            7) echo "Saliendo..."; exit 0 ;;
             *) print_error "Opción no válida."; press_enter_to_continue ;;
         esac
     done
