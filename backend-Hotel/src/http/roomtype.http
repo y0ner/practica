@@ -1,0 +1,82 @@
+###
+# @name RoomType
+# Variables de entorno para las pruebas de RoomType
+@token = ey... (Pega aquí tu token JWT)
+@baseUrl = http://localhost:4000
+
+### ================== RUTAS SIN AUTENTICACIÓN ==================
+
+### Obtener todos los roomtypes (SIN token)
+GET {{baseUrl}}/api/roomtypes/public
+
+### Obtener RoomType por ID (SIN token)
+GET {{baseUrl}}/api/roomtypes/public/1
+
+### Crear un nuevo RoomType (SIN token)
+POST {{baseUrl}}/api/roomtypes/public
+Content-Type: application/json
+
+{
+    "name": "John Doe",
+    "description": "valor de ejemplo",
+    "max_people": "valor de ejemplo",
+    "includes_breakfast": "valor de ejemplo",
+    "status": "ACTIVE"
+}
+
+### Actualizar un RoomType (SIN token)
+PATCH {{baseUrl}}/api/roomtypes/public/1
+Content-Type: application/json
+
+{
+  "name": "Nombre Actualizado"
+}
+
+### Eliminar un RoomType físicamente (SIN token)
+DELETE {{baseUrl}}/api/roomtypes/public/1
+
+### Eliminar un RoomType lógicamente (SIN token)
+DELETE {{baseUrl}}/api/roomtypes/public/2/logic
+
+### ================== RUTAS CON AUTENTICACIÓN ==================
+
+### Obtener todos los roomtypes (CON token)
+GET {{baseUrl}}/api/roomtypes
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+### Obtener un RoomType por ID (CON token)
+GET {{baseUrl}}/api/roomtypes/1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+### Crear un nuevo RoomType (CON token)
+POST {{baseUrl}}/api/roomtypes
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "name": "John Doe",
+    "description": "valor de ejemplo",
+    "max_people": "valor de ejemplo",
+    "includes_breakfast": "valor de ejemplo",
+    "status": "ACTIVE"
+}
+
+### Actualizar un RoomType existente (CON token)
+PATCH {{baseUrl}}/api/roomtypes/1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Nombre Actualizado"
+}
+
+### Eliminar un RoomType físicamente (CON token)
+DELETE {{baseUrl}}/api/roomtypes/1
+Authorization: Bearer {{token}}
+
+### Borrado lógico de un RoomType (CON token)
+DELETE {{baseUrl}}/api/roomtypes/1/logic
+Content-Type: application/json
+Authorization: Bearer {{token}}

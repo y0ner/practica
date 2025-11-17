@@ -1,0 +1,84 @@
+###
+# @name Payment
+# Variables de entorno para las pruebas de Payment
+@token = ey... (Pega aquí tu token JWT)
+@baseUrl = http://localhost:4000
+
+### ================== RUTAS SIN AUTENTICACIÓN ==================
+
+### Obtener todos los payments (SIN token)
+GET {{baseUrl}}/api/payments/public
+
+### Obtener Payment por ID (SIN token)
+GET {{baseUrl}}/api/payments/public/1
+
+### Crear un nuevo Payment (SIN token)
+POST {{baseUrl}}/api/payments/public
+Content-Type: application/json
+
+{
+    "amount": "valor de ejemplo",
+    "method": "valor de ejemplo",
+    "currency": "valor de ejemplo",
+    "payment_date": "2025-11-17T04:14:15.000Z",
+    "reference": "valor de ejemplo",
+    "status": "ACTIVE"
+}
+
+### Actualizar un Payment (SIN token)
+PATCH {{baseUrl}}/api/payments/public/1
+Content-Type: application/json
+
+{
+  "name": "Nombre Actualizado"
+}
+
+### Eliminar un Payment físicamente (SIN token)
+DELETE {{baseUrl}}/api/payments/public/1
+
+### Eliminar un Payment lógicamente (SIN token)
+DELETE {{baseUrl}}/api/payments/public/2/logic
+
+### ================== RUTAS CON AUTENTICACIÓN ==================
+
+### Obtener todos los payments (CON token)
+GET {{baseUrl}}/api/payments
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+### Obtener un Payment por ID (CON token)
+GET {{baseUrl}}/api/payments/1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+### Crear un nuevo Payment (CON token)
+POST {{baseUrl}}/api/payments
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "amount": "valor de ejemplo",
+    "method": "valor de ejemplo",
+    "currency": "valor de ejemplo",
+    "payment_date": "2025-11-17T04:14:15.000Z",
+    "reference": "valor de ejemplo",
+    "status": "ACTIVE"
+}
+
+### Actualizar un Payment existente (CON token)
+PATCH {{baseUrl}}/api/payments/1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Nombre Actualizado"
+}
+
+### Eliminar un Payment físicamente (CON token)
+DELETE {{baseUrl}}/api/payments/1
+Authorization: Bearer {{token}}
+
+### Borrado lógico de un Payment (CON token)
+DELETE {{baseUrl}}/api/payments/1/logic
+Content-Type: application/json
+Authorization: Bearer {{token}}

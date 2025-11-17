@@ -1,0 +1,82 @@
+###
+# @name Service
+# Variables de entorno para las pruebas de Service
+@token = ey... (Pega aquí tu token JWT)
+@baseUrl = http://localhost:4000
+
+### ================== RUTAS SIN AUTENTICACIÓN ==================
+
+### Obtener todos los services (SIN token)
+GET {{baseUrl}}/api/services/public
+
+### Obtener Service por ID (SIN token)
+GET {{baseUrl}}/api/services/public/1
+
+### Crear un nuevo Service (SIN token)
+POST {{baseUrl}}/api/services/public
+Content-Type: application/json
+
+{
+    "name": "John Doe",
+    "description": "valor de ejemplo",
+    "price": "valor de ejemplo",
+    "category": "valor de ejemplo",
+    "status": "ACTIVE"
+}
+
+### Actualizar un Service (SIN token)
+PATCH {{baseUrl}}/api/services/public/1
+Content-Type: application/json
+
+{
+  "name": "Nombre Actualizado"
+}
+
+### Eliminar un Service físicamente (SIN token)
+DELETE {{baseUrl}}/api/services/public/1
+
+### Eliminar un Service lógicamente (SIN token)
+DELETE {{baseUrl}}/api/services/public/2/logic
+
+### ================== RUTAS CON AUTENTICACIÓN ==================
+
+### Obtener todos los services (CON token)
+GET {{baseUrl}}/api/services
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+### Obtener un Service por ID (CON token)
+GET {{baseUrl}}/api/services/1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+### Crear un nuevo Service (CON token)
+POST {{baseUrl}}/api/services
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "name": "John Doe",
+    "description": "valor de ejemplo",
+    "price": "valor de ejemplo",
+    "category": "valor de ejemplo",
+    "status": "ACTIVE"
+}
+
+### Actualizar un Service existente (CON token)
+PATCH {{baseUrl}}/api/services/1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Nombre Actualizado"
+}
+
+### Eliminar un Service físicamente (CON token)
+DELETE {{baseUrl}}/api/services/1
+Authorization: Bearer {{token}}
+
+### Borrado lógico de un Service (CON token)
+DELETE {{baseUrl}}/api/services/1/logic
+Content-Type: application/json
+Authorization: Bearer {{token}}

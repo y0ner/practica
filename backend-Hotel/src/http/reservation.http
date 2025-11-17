@@ -1,0 +1,84 @@
+###
+# @name Reservation
+# Variables de entorno para las pruebas de Reservation
+@token = ey... (Pega aquí tu token JWT)
+@baseUrl = http://localhost:4000
+
+### ================== RUTAS SIN AUTENTICACIÓN ==================
+
+### Obtener todos los reservations (SIN token)
+GET {{baseUrl}}/api/reservations/public
+
+### Obtener Reservation por ID (SIN token)
+GET {{baseUrl}}/api/reservations/public/1
+
+### Crear un nuevo Reservation (SIN token)
+POST {{baseUrl}}/api/reservations/public
+Content-Type: application/json
+
+{
+    "reservation_date": "2025-11-17T04:14:15.000Z",
+    "checkin_date": "2025-11-17T04:14:15.000Z",
+    "checkout_date": "2025-11-17T04:14:15.000Z",
+    "number_of_guests": "valor de ejemplo",
+    "total_amount": "valor de ejemplo",
+    "status": "ACTIVE"
+}
+
+### Actualizar un Reservation (SIN token)
+PATCH {{baseUrl}}/api/reservations/public/1
+Content-Type: application/json
+
+{
+  "name": "Nombre Actualizado"
+}
+
+### Eliminar un Reservation físicamente (SIN token)
+DELETE {{baseUrl}}/api/reservations/public/1
+
+### Eliminar un Reservation lógicamente (SIN token)
+DELETE {{baseUrl}}/api/reservations/public/2/logic
+
+### ================== RUTAS CON AUTENTICACIÓN ==================
+
+### Obtener todos los reservations (CON token)
+GET {{baseUrl}}/api/reservations
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+### Obtener un Reservation por ID (CON token)
+GET {{baseUrl}}/api/reservations/1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+### Crear un nuevo Reservation (CON token)
+POST {{baseUrl}}/api/reservations
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "reservation_date": "2025-11-17T04:14:15.000Z",
+    "checkin_date": "2025-11-17T04:14:15.000Z",
+    "checkout_date": "2025-11-17T04:14:15.000Z",
+    "number_of_guests": "valor de ejemplo",
+    "total_amount": "valor de ejemplo",
+    "status": "ACTIVE"
+}
+
+### Actualizar un Reservation existente (CON token)
+PATCH {{baseUrl}}/api/reservations/1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Nombre Actualizado"
+}
+
+### Eliminar un Reservation físicamente (CON token)
+DELETE {{baseUrl}}/api/reservations/1
+Authorization: Bearer {{token}}
+
+### Borrado lógico de un Reservation (CON token)
+DELETE {{baseUrl}}/api/reservations/1/logic
+Content-Type: application/json
+Authorization: Bearer {{token}}

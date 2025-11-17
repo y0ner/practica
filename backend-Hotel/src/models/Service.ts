@@ -1,5 +1,6 @@
 import { DataTypes, Model } from "sequelize";
 import { sequelize } from "../database/db";
+import { Reservation } from "./Reservation";
 
 export interface ServiceI {
   id?: number;
@@ -49,4 +50,5 @@ Service.init(
   }
 );
 
+Service.belongsToMany(Reservation, { through: "ReservationService" });
 

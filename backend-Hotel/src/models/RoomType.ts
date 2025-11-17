@@ -1,6 +1,7 @@
 import { DataTypes, Model } from "sequelize";
 import { sequelize } from "../database/db";
 import { Room } from "./Room";
+import { Rate } from "./Rate";
 
 export interface RoomTypeI {
   id?: number;
@@ -55,6 +56,15 @@ RoomType.hasMany(Room, {
   sourceKey: "id",
 });
 Room.belongsTo(RoomType, {
+  foreignKey: "roomtype_id",
+  targetKey: "id",
+});
+
+RoomType.hasMany(Rate, {
+  foreignKey: "roomtype_id",
+  sourceKey: "id",
+});
+Rate.belongsTo(RoomType, {
   foreignKey: "roomtype_id",
   targetKey: "id",
 });

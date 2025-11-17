@@ -5,36 +5,30 @@ import { Reservation } from "./Reservation";
 export interface CheckinI {
   id?: number;
   time: Date;
-  observation: string;
+  observation?: string;
   reservation_id: number;
-  status: "ACTIVE" | "INACTIVE";
 }
 
 export class Checkin extends Model<CheckinI> implements CheckinI {
   public time!: Date;
-  public observation!: string;
+  public observation?: string;
   public reservation_id!: number;
-  public status!: "ACTIVE" | "INACTIVE";
 }
 
 Checkin.init(
   {
     time: {
       type: DataTypes.DATE,
-      allowNull: false
+      allowNull: false,
     },
     observation: {
       type: DataTypes.TEXT,
-      allowNull: true
+      allowNull: true,
     },
     reservation_id: {
       type: DataTypes.INTEGER,
-      allowNull: false
-    },
-    status: {
-      type: DataTypes.ENUM("ACTIVE", "INACTIVE"),
-      defaultValue: "ACTIVE",
-    },
+      allowNull: false,
+    }
   },
   {
     sequelize,
@@ -43,5 +37,3 @@ Checkin.init(
     timestamps: false,
   }
 );
-
-

@@ -1,0 +1,82 @@
+###
+# @name Rate
+# Variables de entorno para las pruebas de Rate
+@token = ey... (Pega aquí tu token JWT)
+@baseUrl = http://localhost:4000
+
+### ================== RUTAS SIN AUTENTICACIÓN ==================
+
+### Obtener todos los rates (SIN token)
+GET {{baseUrl}}/api/rates/public
+
+### Obtener Rate por ID (SIN token)
+GET {{baseUrl}}/api/rates/public/1
+
+### Crear un nuevo Rate (SIN token)
+POST {{baseUrl}}/api/rates/public
+Content-Type: application/json
+
+{
+    "amount": "valor de ejemplo",
+    "currency": "valor de ejemplo",
+    "description": "valor de ejemplo",
+    "refundable": "valor de ejemplo",
+    "status": "ACTIVE"
+}
+
+### Actualizar un Rate (SIN token)
+PATCH {{baseUrl}}/api/rates/public/1
+Content-Type: application/json
+
+{
+  "name": "Nombre Actualizado"
+}
+
+### Eliminar un Rate físicamente (SIN token)
+DELETE {{baseUrl}}/api/rates/public/1
+
+### Eliminar un Rate lógicamente (SIN token)
+DELETE {{baseUrl}}/api/rates/public/2/logic
+
+### ================== RUTAS CON AUTENTICACIÓN ==================
+
+### Obtener todos los rates (CON token)
+GET {{baseUrl}}/api/rates
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+### Obtener un Rate por ID (CON token)
+GET {{baseUrl}}/api/rates/1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+### Crear un nuevo Rate (CON token)
+POST {{baseUrl}}/api/rates
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "amount": "valor de ejemplo",
+    "currency": "valor de ejemplo",
+    "description": "valor de ejemplo",
+    "refundable": "valor de ejemplo",
+    "status": "ACTIVE"
+}
+
+### Actualizar un Rate existente (CON token)
+PATCH {{baseUrl}}/api/rates/1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Nombre Actualizado"
+}
+
+### Eliminar un Rate físicamente (CON token)
+DELETE {{baseUrl}}/api/rates/1
+Authorization: Bearer {{token}}
+
+### Borrado lógico de un Rate (CON token)
+DELETE {{baseUrl}}/api/rates/1/logic
+Content-Type: application/json
+Authorization: Bearer {{token}}

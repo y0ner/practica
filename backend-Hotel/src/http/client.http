@@ -1,0 +1,86 @@
+###
+# @name Client
+# Variables de entorno para las pruebas de Client
+@token = ey... (Pega aquí tu token JWT)
+@baseUrl = http://localhost:4000
+
+### ================== RUTAS SIN AUTENTICACIÓN ==================
+
+### Obtener todos los clients (SIN token)
+GET {{baseUrl}}/api/clients/public
+
+### Obtener Client por ID (SIN token)
+GET {{baseUrl}}/api/clients/public/1
+
+### Crear un nuevo Client (SIN token)
+POST {{baseUrl}}/api/clients/public
+Content-Type: application/json
+
+{
+    "first_name": "John Doe",
+    "last_name": "John Doe",
+    "document": "valor de ejemplo",
+    "phone": "3001234567",
+    "email": "example@email.com",
+    "nationality": "valor de ejemplo",
+    "status": "ACTIVE"
+}
+
+### Actualizar un Client (SIN token)
+PATCH {{baseUrl}}/api/clients/public/1
+Content-Type: application/json
+
+{
+  "name": "Nombre Actualizado"
+}
+
+### Eliminar un Client físicamente (SIN token)
+DELETE {{baseUrl}}/api/clients/public/1
+
+### Eliminar un Client lógicamente (SIN token)
+DELETE {{baseUrl}}/api/clients/public/2/logic
+
+### ================== RUTAS CON AUTENTICACIÓN ==================
+
+### Obtener todos los clients (CON token)
+GET {{baseUrl}}/api/clients
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+### Obtener un Client por ID (CON token)
+GET {{baseUrl}}/api/clients/1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+### Crear un nuevo Client (CON token)
+POST {{baseUrl}}/api/clients
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "first_name": "John Doe",
+    "last_name": "John Doe",
+    "document": "valor de ejemplo",
+    "phone": "3001234567",
+    "email": "example@email.com",
+    "nationality": "valor de ejemplo",
+    "status": "ACTIVE"
+}
+
+### Actualizar un Client existente (CON token)
+PATCH {{baseUrl}}/api/clients/1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Nombre Actualizado"
+}
+
+### Eliminar un Client físicamente (CON token)
+DELETE {{baseUrl}}/api/clients/1
+Authorization: Bearer {{token}}
+
+### Borrado lógico de un Client (CON token)
+DELETE {{baseUrl}}/api/clients/1/logic
+Content-Type: application/json
+Authorization: Bearer {{token}}

@@ -1,0 +1,82 @@
+###
+# @name Season
+# Variables de entorno para las pruebas de Season
+@token = ey... (Pega aquí tu token JWT)
+@baseUrl = http://localhost:4000
+
+### ================== RUTAS SIN AUTENTICACIÓN ==================
+
+### Obtener todos los seasons (SIN token)
+GET {{baseUrl}}/api/seasons/public
+
+### Obtener Season por ID (SIN token)
+GET {{baseUrl}}/api/seasons/public/1
+
+### Crear un nuevo Season (SIN token)
+POST {{baseUrl}}/api/seasons/public
+Content-Type: application/json
+
+{
+    "name": "John Doe",
+    "start_date": "2025-11-17T04:14:15.000Z",
+    "end_date": "2025-11-17T04:14:15.000Z",
+    "price_multiplier": "valor de ejemplo",
+    "status": "ACTIVE"
+}
+
+### Actualizar un Season (SIN token)
+PATCH {{baseUrl}}/api/seasons/public/1
+Content-Type: application/json
+
+{
+  "name": "Nombre Actualizado"
+}
+
+### Eliminar un Season físicamente (SIN token)
+DELETE {{baseUrl}}/api/seasons/public/1
+
+### Eliminar un Season lógicamente (SIN token)
+DELETE {{baseUrl}}/api/seasons/public/2/logic
+
+### ================== RUTAS CON AUTENTICACIÓN ==================
+
+### Obtener todos los seasons (CON token)
+GET {{baseUrl}}/api/seasons
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+### Obtener un Season por ID (CON token)
+GET {{baseUrl}}/api/seasons/1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+### Crear un nuevo Season (CON token)
+POST {{baseUrl}}/api/seasons
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "name": "John Doe",
+    "start_date": "2025-11-17T04:14:15.000Z",
+    "end_date": "2025-11-17T04:14:15.000Z",
+    "price_multiplier": "valor de ejemplo",
+    "status": "ACTIVE"
+}
+
+### Actualizar un Season existente (CON token)
+PATCH {{baseUrl}}/api/seasons/1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Nombre Actualizado"
+}
+
+### Eliminar un Season físicamente (CON token)
+DELETE {{baseUrl}}/api/seasons/1
+Authorization: Bearer {{token}}
+
+### Borrado lógico de un Season (CON token)
+DELETE {{baseUrl}}/api/seasons/1/logic
+Content-Type: application/json
+Authorization: Bearer {{token}}

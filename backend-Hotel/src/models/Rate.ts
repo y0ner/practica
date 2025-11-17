@@ -1,6 +1,7 @@
 import { DataTypes, Model } from "sequelize";
 import { sequelize } from "../database/db";
 import { Season } from "./Season";
+import { RoomType } from "./RoomType";
 
 export interface RateI {
   id?: number;
@@ -9,6 +10,7 @@ export interface RateI {
   description: string;
   refundable: boolean;
   season_id: number;
+  roomtype_id: number;
   status: "ACTIVE" | "INACTIVE";
 }
 
@@ -18,6 +20,7 @@ export class Rate extends Model<RateI> implements RateI {
   public description!: string;
   public refundable!: boolean;
   public season_id!: number;
+  public roomtype_id!: number;
   public status!: "ACTIVE" | "INACTIVE";
 }
 
@@ -40,6 +43,10 @@ Rate.init(
       allowNull: false
     },
     season_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    roomtype_id: {
       type: DataTypes.INTEGER,
       allowNull: false
     },

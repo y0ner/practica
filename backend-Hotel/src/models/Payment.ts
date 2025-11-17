@@ -1,5 +1,6 @@
 import { DataTypes, Model } from "sequelize";
 import { sequelize } from "../database/db";
+import { Reservation } from "./Reservation";
 
 export interface PaymentI {
   id?: number;
@@ -8,7 +9,8 @@ export interface PaymentI {
   currency: string;
   payment_date: Date;
   reference: string;
-  status: "ACTIVE" | "INACTIVE";
+  reservation_id: number;
+  status?: string;
 }
 
 export class Payment extends Model<PaymentI> implements PaymentI {
@@ -17,7 +19,8 @@ export class Payment extends Model<PaymentI> implements PaymentI {
   public currency!: string;
   public payment_date!: Date;
   public reference!: string;
-  public status!: "ACTIVE" | "INACTIVE";
+  public reservation_id!: number;
+  public status!: string;
 }
 
 Payment.init(
@@ -42,10 +45,15 @@ Payment.init(
       type: DataTypes.STRING,
       allowNull: true
     },
-    status: {
-      type: DataTypes.ENUM("ACTIVE", "INACTIVE"),
-      defaultValue: "ACTIVE",
+    reservation_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false
     },
+    status: {
+      type: DataTypes.ENUM("ACTIVE", "CANCELLED"),
+      defaultValue: "ACTIVE",
+      allowNull: false
+    }
   },
   {
     sequelize,
@@ -54,5 +62,3 @@ Payment.init(
     timestamps: false,
   }
 );
-
-

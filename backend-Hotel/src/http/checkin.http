@@ -1,0 +1,78 @@
+###
+# @name Checkin
+# Variables de entorno para las pruebas de Checkin
+@token = ey... (Pega aquí tu token JWT)
+@baseUrl = http://localhost:4000
+
+### ================== RUTAS SIN AUTENTICACIÓN ==================
+
+### Obtener todos los checkins (SIN token)
+GET {{baseUrl}}/api/checkins/public
+
+### Obtener Checkin por ID (SIN token)
+GET {{baseUrl}}/api/checkins/public/1
+
+### Crear un nuevo Checkin (SIN token)
+POST {{baseUrl}}/api/checkins/public
+Content-Type: application/json
+
+{
+    "time": "valor de ejemplo",
+    "observation": "valor de ejemplo",
+    "status": "ACTIVE"
+}
+
+### Actualizar un Checkin (SIN token)
+PATCH {{baseUrl}}/api/checkins/public/1
+Content-Type: application/json
+
+{
+  "name": "Nombre Actualizado"
+}
+
+### Eliminar un Checkin físicamente (SIN token)
+DELETE {{baseUrl}}/api/checkins/public/1
+
+### Eliminar un Checkin lógicamente (SIN token)
+DELETE {{baseUrl}}/api/checkins/public/2/logic
+
+### ================== RUTAS CON AUTENTICACIÓN ==================
+
+### Obtener todos los checkins (CON token)
+GET {{baseUrl}}/api/checkins
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+### Obtener un Checkin por ID (CON token)
+GET {{baseUrl}}/api/checkins/1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+### Crear un nuevo Checkin (CON token)
+POST {{baseUrl}}/api/checkins
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "time": "valor de ejemplo",
+    "observation": "valor de ejemplo",
+    "status": "ACTIVE"
+}
+
+### Actualizar un Checkin existente (CON token)
+PATCH {{baseUrl}}/api/checkins/1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Nombre Actualizado"
+}
+
+### Eliminar un Checkin físicamente (CON token)
+DELETE {{baseUrl}}/api/checkins/1
+Authorization: Bearer {{token}}
+
+### Borrado lógico de un Checkin (CON token)
+DELETE {{baseUrl}}/api/checkins/1/logic
+Content-Type: application/json
+Authorization: Bearer {{token}}

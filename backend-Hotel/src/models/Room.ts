@@ -1,6 +1,7 @@
 import { DataTypes, Model } from "sequelize";
 import { sequelize } from "../database/db";
 import { RoomType } from "./RoomType";
+import { Reservation } from "./Reservation";
 import { Hotel } from "./Hotel";
 
 export interface RoomI {
@@ -11,8 +12,8 @@ export interface RoomI {
   description: string;
   base_price: number;
   available: boolean;
-  hotel_id: number;
   roomtype_id: number;
+  hotel_id: number;
   status: "ACTIVE" | "INACTIVE";
 }
 
@@ -23,8 +24,8 @@ export class Room extends Model<RoomI> implements RoomI {
   public description!: string;
   public base_price!: number;
   public available!: boolean;
-  public hotel_id!: number;
   public roomtype_id!: number;
+  public hotel_id!: number;
   public status!: "ACTIVE" | "INACTIVE";
 }
 
@@ -54,11 +55,11 @@ Room.init(
       type: DataTypes.BOOLEAN,
       allowNull: false
     },
-    hotel_id: {
+    roomtype_id: {
       type: DataTypes.INTEGER,
       allowNull: false
     },
-    roomtype_id: {
+    hotel_id: {
       type: DataTypes.INTEGER,
       allowNull: false
     },
@@ -74,5 +75,14 @@ Room.init(
     timestamps: false,
   }
 );
+
+Room.hasMany(Reservation, {
+  foreignKey: "room_id",
+  sourceKey: "id",
+});
+Reservation.belongsTo(Room, {
+  foreignKey: "room_id",
+  targetKey: "id",
+});
 
 

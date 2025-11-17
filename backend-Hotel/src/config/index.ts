@@ -2,12 +2,15 @@ import dotenv from "dotenv";
 import express, { Application } from "express";
 import morgan from "morgan";
 import { sequelize, testConnection, getDatabaseInfo } from "../database/db";
+import { Routes } from "../routes/index";
+
 var cors = require("cors");
 
 dotenv.config();
 
 export class App {
   public app: Application;
+  public routePrv: Routes = new Routes();
 
   constructor(private port?: number | string) {
     this.app = express();
@@ -28,30 +31,47 @@ export class App {
     this.app.use(express.urlencoded({ extended: false }));
   }
 
+  // Route configuration
   private routes(): void {
-    // Las rutas se configurarán más adelante
+    this.routePrv.seasonRoutes.routes(this.app);
+    this.routePrv.roomTypeRoutes.routes(this.app);
+    this.routePrv.reservationServiceRoutes.routes(this.app);
+    this.routePrv.hotelRoutes.routes(this.app);
+    this.routePrv.serviceRoutes.routes(this.app);
+    this.routePrv.reservationRoutes.routes(this.app);
+    this.routePrv.checkoutRoutes.routes(this.app);
+    this.routePrv.rateRoutes.routes(this.app);
+    this.routePrv.roomRoutes.routes(this.app);
+    this.routePrv.paymentRoutes.routes(this.app);
+    this.routePrv.clientRoutes.routes(this.app);
+    this.routePrv.checkinRoutes.routes(this.app);
+
+    // --- Authorization Routes ---
+    this.routePrv.userRoutes.routes(this.app);
+    this.routePrv.roleRoutes.routes(this.app);
+    this.routePrv.roleUserRoutes.routes(this.app);
+    this.routePrv.refreshTokenRoutes.routes(this.app);
+    this.routePrv.resourceRoutes.routes(this.app);
+    this.routePrv.resourceRoleRoutes.routes(this.app);
+    this.routePrv.authRoutes.routes(this.app);
   }
 
   private async dbConnection(): Promise<void> {
     try {
-      // Mostrar información de la base de datos seleccionada
       const dbInfo = getDatabaseInfo();
       console.log(`🔗 Intentando conectar a: ${dbInfo.engine.toUpperCase()}`);
-
-      // Probar la conexión
       const isConnected = await testConnection();
-
       if (!isConnected) {
         throw new Error(`No se pudo conectar a la base de datos ${dbInfo.engine.toUpperCase()}`);
       }
-
-      // Sincronizar la base de datos
       await sequelize.sync({ force: false });
+      // await sequelize.query('SET FOREIGN_KEY_CHECKS = 0;');
+      // await sequelize.sync({ force: true });
+      // await sequelize.query('SET FOREIGN_KEY_CHECKS = 1;');
       console.log(`📦 Base de datos sincronizada exitosamente`);
-
     } catch (error) {
       console.error("❌ Error al conectar con la base de datos:", error);
-      process.exit(1); // Terminar la aplicación si no se puede conectar
+      process.exit(1);
     }
   }
 

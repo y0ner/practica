@@ -1,0 +1,78 @@
+###
+# @name Checkout
+# Variables de entorno para las pruebas de Checkout
+@token = ey... (Pega aquí tu token JWT)
+@baseUrl = http://localhost:4000
+
+### ================== RUTAS SIN AUTENTICACIÓN ==================
+
+### Obtener todos los checkouts (SIN token)
+GET {{baseUrl}}/api/checkouts/public
+
+### Obtener Checkout por ID (SIN token)
+GET {{baseUrl}}/api/checkouts/public/1
+
+### Crear un nuevo Checkout (SIN token)
+POST {{baseUrl}}/api/checkouts/public
+Content-Type: application/json
+
+{
+    "time": "valor de ejemplo",
+    "observation": "valor de ejemplo",
+    "status": "ACTIVE"
+}
+
+### Actualizar un Checkout (SIN token)
+PATCH {{baseUrl}}/api/checkouts/public/1
+Content-Type: application/json
+
+{
+  "name": "Nombre Actualizado"
+}
+
+### Eliminar un Checkout físicamente (SIN token)
+DELETE {{baseUrl}}/api/checkouts/public/1
+
+### Eliminar un Checkout lógicamente (SIN token)
+DELETE {{baseUrl}}/api/checkouts/public/2/logic
+
+### ================== RUTAS CON AUTENTICACIÓN ==================
+
+### Obtener todos los checkouts (CON token)
+GET {{baseUrl}}/api/checkouts
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+### Obtener un Checkout por ID (CON token)
+GET {{baseUrl}}/api/checkouts/1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+### Crear un nuevo Checkout (CON token)
+POST {{baseUrl}}/api/checkouts
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "time": "valor de ejemplo",
+    "observation": "valor de ejemplo",
+    "status": "ACTIVE"
+}
+
+### Actualizar un Checkout existente (CON token)
+PATCH {{baseUrl}}/api/checkouts/1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Nombre Actualizado"
+}
+
+### Eliminar un Checkout físicamente (CON token)
+DELETE {{baseUrl}}/api/checkouts/1
+Authorization: Bearer {{token}}
+
+### Borrado lógico de un Checkout (CON token)
+DELETE {{baseUrl}}/api/checkouts/1/logic
+Content-Type: application/json
+Authorization: Bearer {{token}}

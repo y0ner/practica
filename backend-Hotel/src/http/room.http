@@ -1,0 +1,86 @@
+###
+# @name Room
+# Variables de entorno para las pruebas de Room
+@token = ey... (Pega aquí tu token JWT)
+@baseUrl = http://localhost:4000
+
+### ================== RUTAS SIN AUTENTICACIÓN ==================
+
+### Obtener todos los rooms (SIN token)
+GET {{baseUrl}}/api/rooms/public
+
+### Obtener Room por ID (SIN token)
+GET {{baseUrl}}/api/rooms/public/1
+
+### Crear un nuevo Room (SIN token)
+POST {{baseUrl}}/api/rooms/public
+Content-Type: application/json
+
+{
+    "number": "valor de ejemplo",
+    "floor": "valor de ejemplo",
+    "capacity": "valor de ejemplo",
+    "description": "valor de ejemplo",
+    "base_price": "valor de ejemplo",
+    "available": "valor de ejemplo",
+    "status": "ACTIVE"
+}
+
+### Actualizar un Room (SIN token)
+PATCH {{baseUrl}}/api/rooms/public/1
+Content-Type: application/json
+
+{
+  "name": "Nombre Actualizado"
+}
+
+### Eliminar un Room físicamente (SIN token)
+DELETE {{baseUrl}}/api/rooms/public/1
+
+### Eliminar un Room lógicamente (SIN token)
+DELETE {{baseUrl}}/api/rooms/public/2/logic
+
+### ================== RUTAS CON AUTENTICACIÓN ==================
+
+### Obtener todos los rooms (CON token)
+GET {{baseUrl}}/api/rooms
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+### Obtener un Room por ID (CON token)
+GET {{baseUrl}}/api/rooms/1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+### Crear un nuevo Room (CON token)
+POST {{baseUrl}}/api/rooms
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "number": "valor de ejemplo",
+    "floor": "valor de ejemplo",
+    "capacity": "valor de ejemplo",
+    "description": "valor de ejemplo",
+    "base_price": "valor de ejemplo",
+    "available": "valor de ejemplo",
+    "status": "ACTIVE"
+}
+
+### Actualizar un Room existente (CON token)
+PATCH {{baseUrl}}/api/rooms/1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Nombre Actualizado"
+}
+
+### Eliminar un Room físicamente (CON token)
+DELETE {{baseUrl}}/api/rooms/1
+Authorization: Bearer {{token}}
+
+### Borrado lógico de un Room (CON token)
+DELETE {{baseUrl}}/api/rooms/1/logic
+Content-Type: application/json
+Authorization: Bearer {{token}}

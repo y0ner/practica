@@ -1,0 +1,76 @@
+###
+# @name ReservationService
+# Variables de entorno para las pruebas de ReservationService
+@token = ey... (Pega aquí tu token JWT)
+@baseUrl = http://localhost:4000
+
+### ================== RUTAS SIN AUTENTICACIÓN ==================
+
+### Obtener todos los reservationservices (SIN token)
+GET {{baseUrl}}/api/reservationservices/public
+
+### Obtener ReservationService por ID (SIN token)
+GET {{baseUrl}}/api/reservationservices/public/1
+
+### Crear un nuevo ReservationService (SIN token)
+POST {{baseUrl}}/api/reservationservices/public
+Content-Type: application/json
+
+{
+    "quantity": "valor de ejemplo",
+    "status": "ACTIVE"
+}
+
+### Actualizar un ReservationService (SIN token)
+PATCH {{baseUrl}}/api/reservationservices/public/1
+Content-Type: application/json
+
+{
+  "name": "Nombre Actualizado"
+}
+
+### Eliminar un ReservationService físicamente (SIN token)
+DELETE {{baseUrl}}/api/reservationservices/public/1
+
+### Eliminar un ReservationService lógicamente (SIN token)
+DELETE {{baseUrl}}/api/reservationservices/public/2/logic
+
+### ================== RUTAS CON AUTENTICACIÓN ==================
+
+### Obtener todos los reservationservices (CON token)
+GET {{baseUrl}}/api/reservationservices
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+### Obtener un ReservationService por ID (CON token)
+GET {{baseUrl}}/api/reservationservices/1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+### Crear un nuevo ReservationService (CON token)
+POST {{baseUrl}}/api/reservationservices
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "quantity": "valor de ejemplo",
+    "status": "ACTIVE"
+}
+
+### Actualizar un ReservationService existente (CON token)
+PATCH {{baseUrl}}/api/reservationservices/1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Nombre Actualizado"
+}
+
+### Eliminar un ReservationService físicamente (CON token)
+DELETE {{baseUrl}}/api/reservationservices/1
+Authorization: Bearer {{token}}
+
+### Borrado lógico de un ReservationService (CON token)
+DELETE {{baseUrl}}/api/reservationservices/1/logic
+Content-Type: application/json
+Authorization: Bearer {{token}}
