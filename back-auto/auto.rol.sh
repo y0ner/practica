@@ -528,6 +528,7 @@ function add_crud_permissions_to_admin() {
             "POST /api/${resource_name}"
             "PATCH /api/${resource_name}/:id"
             "DELETE /api/${resource_name}/:id"
+            "DELETE /api/${resource_name}/:id/logic"
         )
 
         for endpoint in "${crud_endpoints[@]}"; do

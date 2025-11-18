@@ -52,37 +52,9 @@ import { map } from 'rxjs/operators';
 import { ${model_name}I, ${model_name}ResponseI } from '../models/${table_name}';
 import { AuthService } from './auth.service';
 
-// Interfaz para la respuesta del backend (espera un objeto con una propiedad que es el array)
-interface ${model_name}ApiResponse {
-  ${response_key}: ${model_name}ResponseI[];
-}
-
-@Injectable({
-  providedIn: 'root'
-})
-export class ${model_name}Service {
-  private baseUrl = 'http://localhost:4000/api/${table_name}';
-  private ${table_name}Subject = new BehaviorSubject<${model_name}ResponseI[]>([]);
-  public ${table_name}\$ = this.${table_name}Subject.asObservable();
-
-  constructor(
-    private http: HttpClient,
-    private authService: AuthService
-  ) {}
-
-  private getHeaders(): HttpHeaders {
-    let headers = new HttpHeaders();
-    const token = this.authService.getToken();
-    if (token) {
-      headers = headers.set('Authorization', \`Bearer \${token}\`);
-    }
-    return headers;
-  }
-
   getAll(): Observable<${model_name}ResponseI[]> {
-    return this.http.get<${model_name}ApiResponse>(this.baseUrl, { headers: this.getHeaders() })
+    return this.http.get<${model_name}ResponseI[]>(this.baseUrl, { headers: this.getHeaders() })
       .pipe(
-        map(response => response.${response_key}), // Extraer el array de la propiedad
         tap(${table_name} => {
           this.${table_name}Subject.next(${table_name});
         }),
